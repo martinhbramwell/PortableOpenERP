@@ -98,26 +98,26 @@ export RCM_DB_PASSWD='$(genpasswd)'
 #EOF
 CONFIGFILE
 #
+echo "Make iRedMail installer executable."
+chmod a+x iRedMail.sh
+#
+$DEFDIR/iredmailUnattendedInstall.sh $(pwd)
+exit
+#
+echo "Executing iRedMail installer"
+VAR=$(expect -c '
+  bash iRedMail.sh
+  expect eof
+')
+#
+#  expect "Command may disrupt existing ssh connections. Proceed with operation (y|n)?"
+#  send "y\n"
+#
 echo "Exiting ${INSTALLERS}/iRedMail"
 popd
 echo "Exiting ${INSTALLERS}"
 popd
 exit
-#
-rm -f /etc/init.d/oerp-site_z
-echo "Overwriting /etc/hostname"
-cat <<WRITTEN> /etc/init.d/oerp-site_z
-
-WRITTEN
-chmod 700 /etc/init.d/oerp-site_z
-#
-echo "Opening port for http access"
-VAR=$(expect -c '
-  spawn ufw enable
-  expect "Command may disrupt existing ssh connections. Proceed with operation (y|n)?"
-  send "y\n"
-  expect eof
-')
 #
 echo $VAR
 #

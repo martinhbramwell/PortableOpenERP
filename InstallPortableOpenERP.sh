@@ -29,6 +29,7 @@ if [[  1 -eq 0  ]]
 then
 #
 source $DEFDIR/ipoerpAptDependencies.sh
+source $DEFDIR/iredmailSetHostName.sh
 #
 #
 source $DEFDIR/ipoerpPrepareUsersAndDirectories.sh
@@ -41,7 +42,6 @@ source $DEFDIR/ipoerpMakeUpStartScript.sh
 #
 else
 #
-source $DEFDIR/iredmailSetHostName.sh
 source $DEFDIR/iredmailInstallAll.sh
 #
 fi
