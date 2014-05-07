@@ -22,6 +22,9 @@ export OERPUSR_HOME="/srv/site_z/openerp"
 # Specify OpenERP XMLRPC port #
 export ACCESS_PORT=8019
 #
+# Installers directory
+export INSTALLERS=~/installers
+#
 if [[  1 -eq 0  ]]
 then
 #
