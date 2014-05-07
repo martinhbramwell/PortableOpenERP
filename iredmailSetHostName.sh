@@ -46,7 +46,6 @@ ifdown eth0 && ifup eth0
 printf "Hostname is now . . . "
 hostname -f
 #
-exit
 else
 echo "Hostname and hosts already match"
 fi

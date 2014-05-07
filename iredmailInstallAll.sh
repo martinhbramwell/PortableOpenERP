@@ -41,7 +41,8 @@ ln -s ${IREDMAILPKG} iRedMail
 echo "Entering ${INSTALLERS}/iRedMail"
 pushd iRedMail
 #
-# echo "Comment out this line after setting the parameters below." ; exit 1;
+echo " Configure PostgreSQL to 9.3"
+sed -i.bak "s|export PGSQL_VERSION='9.1'|export PGSQL_VERSION='9.3'|g" conf/postgresql 
 #
 export FIRST_USER_PASSWD_PLAIN=${PSQLUSRPWD}
 export FIRST_USER_PASSWD=${PSQLUSRPWD}
