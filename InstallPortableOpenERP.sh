@@ -4,12 +4,12 @@ DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
 #
 # Define the host name and domain to be used for this machine
 export NEWHOSTNAME="mtt"
-export NEWHOSTDOMAIN="justtrade.net"
+export NEWHOSTDOMAIN=""
 #
 # Define the identifiers OpenERP will use to connect to postgres
 export PSQLUSR="psql_user_z"
 export PSQLUSR_HOME="/srv/site_z/postgres"
-export PSQLUSRPWD=";Mkjiu87"
+export PSQLUSRPWD=""
 #
 # Define the initial database for OpenERP
 export PSQLUSRTBSP="site_z"
@@ -26,6 +26,8 @@ if [[  1 -eq 0  ]]
 then
 #
 source $DEFDIR/ipoerpAptDependencies.sh
+#
+#
 source $DEFDIR/ipoerpPrepareUsersAndDirectories.sh
 source $DEFDIR/ipoerpMakeOerpServerConfigFile.sh
 su postgres -c "source $DEFDIR/ipoerpPreparePgUserAndTablespace.sh"
@@ -36,6 +38,7 @@ source $DEFDIR/ipoerpMakeUpStartScript.sh
 #
 else
 #
+source $DEFDIR/iredmailSetHostName.sh
 source $DEFDIR/iredmailInstallAll.sh
 #
 fi

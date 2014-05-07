@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-# if [[ -z $HOSTNAME || -z $HOSTDOMAIN  || -z $PSQLUSRTBSP  || -z $PSQLUSRDB  || -z $PSQLUSR_HOME  ]]
 if [[ -z ${NEWHOSTNAME} || -z ${NEWHOSTDOMAIN}  ]]
 then
 #
@@ -13,24 +12,9 @@ exit 0
 #
 fi
 #
-export HOSTNAMEOK=$(grep -c "^${NEWHOSTNAME}$" hostname)
-export DOMAINOK=$(grep -c "${NEWHOSTNAME}\.${NEWHOSTDOMAIN}" hosts)
-if [[ ${HOSTNAMEOK} -lt 1 || ${DOMAINOK} -lt 1 ]]
-then
-echo "Changing hostname. . . "
-cat <<DONE> /etc/hostname
-${NEWHOSTNAME}
-DONE
-echo "Changing hostnames in hosts . . . "
-#
-sed -i.bak "s|127\.0\.1\.1.*|127.0.1.1      ${NEWHOSTNAME}.${NEWHOSTDOMAIN} ${NEWHOSTNAME}|g" /etc/hosts
-echo "Restarting hostname service ..."
-export RESULT=$(service hostname restart)
-ifdown eth0 && ifup eth0
-else
-echo "Hostname and hosts already match"
-fi
-#
+export IREDMAIL="https://bitbucket.org/zhb/iredmail/downloads/iRedMail-0.8.6.tar.bz2"
+echo "Obtaining iRedMail installers from ${IREDMAIL}"
+
 exit
 #
 rm -f /etc/init.d/oerp-site_z
