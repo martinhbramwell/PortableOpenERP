@@ -60,7 +60,7 @@ else
 #
 echo "Starting partial execution!"
 #
-echo "01) Fulfill all apt-get dependencis"
+echo "01) Fulfill all aptitude dependencis"
 source $DEFDIR/ipoerpAptDependencies.sh
 #
 echo "02) Set hostname"
