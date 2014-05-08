@@ -27,6 +27,8 @@ local   site_z_db            $PSQLUSR                             peer
 EOF
 fi
 #
+cd ~
+#
 [[ $(psql $PSQLUSR -c "" >/dev/null 2>&1 ; echo $?) -gt 0 ]] && \
      psql -c "CREATE DATABASE $PSQLUSR;"
 [[ 1 -gt $(psql -c "\du" | grep -c $PSQLUSR )  ]] && \
