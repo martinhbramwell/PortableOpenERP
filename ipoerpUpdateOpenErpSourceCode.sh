@@ -10,7 +10,7 @@ exit
 fi
 #
 echo "Stepping into $OERPUSR_HOME"
-pushd $OERPUSR_HOME
+cd $OERPUSR_HOME
 #
 if [  1 -eq 1  ]
 then
@@ -27,7 +27,7 @@ then
 		echo "Stepped out to $(pwd)"
 	else
 		echo "Checking out lp:openobject-server"
-		bzr checkout lightweight lp:openobject-server
+		bzr checkout --lightweight lp:openobject-server
 	fi
 	#
 	if [ -d openobject-addons ]
@@ -40,7 +40,7 @@ then
 		#
 	else
 		echo "Checking out lp:openobject-addons"
-		bzr checkout lightweight lp:openobject-addons
+		bzr checkout --lightweight lp:openobject-addons
 	fi
 	#
 	if [ -d openerp-web ]
@@ -52,7 +52,7 @@ then
 		echo "Stepped out to $(pwd)"
 	else
 		echo "Checking out lp:openerp-web"
-		bzr checkout lightweight lp:openerp-web
+		bzr checkout --lightweight lp:openerp-web
 	fi
 	#
 	popd
@@ -72,9 +72,6 @@ cp -R ../source/openerp-web/addons/* openerp/addons/
 # ls -l openerp/addons/base
 # ls -l openerp/addons/web_api
 # ls -l openerp/addons/website_mail
-popd
-echo "Stepped out to $(pwd)"
-#
 popd
 echo "Stepped out to $(pwd)"
 #
