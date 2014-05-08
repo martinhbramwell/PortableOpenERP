@@ -28,10 +28,12 @@ chmod -R 770 $PSQLUSR_HOME
 #
 [[  1 -gt $(getent passwd | grep -c $OERPUSR) ]] && useradd -d $OERPUSR_HOME $OERPUSR
 #
+mkdir -p $OERPUSR_HOME/source/
 mkdir -p $OERPUSR_HOME/server/
 mkdir -p $OERPUSR_HOME/log
 mkdir -p $OERPUSR_HOME/.local
 touch $OERPUSR_HOME/.bzr.log
+chown -R oerp_user_z:oerp_user_z $OERPUSR_HOME/source
 chown -R oerp_user_z:oerp_user_z $OERPUSR_HOME/server
 chown -R oerp_user_z:oerp_user_z $OERPUSR_HOME/log
 chown -R oerp_user_z:oerp_user_z $OERPUSR_HOME/.bzr.log
