@@ -16,7 +16,7 @@ if [[  1 -eq 1  ]]
 then
 #
 VENV_PATH=$OERPUSR_HOME/server
-pushd $VENV_PATH
+cd $VENV_PATH
 pwd
 if [[  -d  "$VENV_PATH/venv" ]]
 then
@@ -62,8 +62,6 @@ pip install werkzeug
 pip install xlwt
 #
 pip install lxml
-#
-popd
 #
 else
 #

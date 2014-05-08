@@ -9,9 +9,8 @@ exit
 fi
 #
 echo "Stepping into $OERPUSR_HOME"
-pushd $OERPUSR_HOME/server
+cd $OERPUSR_HOME/server
 #
 sed -i.bak "s|env python|env $OERPUSR_HOME/server/venv/bin/python|g" openerp-server
 #
-popd
 
