@@ -3,7 +3,7 @@
 DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
 #
 # Define the host name and domain to be used for this machine
-export NEWHOSTNAME="mtt"
+export NEWHOSTNAME=""
 export NEWHOSTDOMAIN=""
 #
 # Define the identifiers OpenERP will use to connect to postgres
@@ -28,22 +28,32 @@ export INSTALLERS=~/installers
 if [[  1 -eq 0  ]]
 then
 #
+#
+echo "01) Fulfill all apt-get dependencis"
 source $DEFDIR/ipoerpAptDependencies.sh
+echo "02) Set hostname"
 source $DEFDIR/iredmailSetHostName.sh
-#
-#
+echo "03) Install all of iRedMail"
+source $DEFDIR/iredmailInstallAll.sh
+echo "04) Prepare users and directories"
 source $DEFDIR/ipoerpPrepareUsersAndDirectories.sh
+echo "05) Generate OpenERP server configuration file"
 source $DEFDIR/ipoerpMakeOerpServerConfigFile.sh
+echo "06) Prepare PostgreSQL User and Tablespace"
 su postgres -c "source $DEFDIR/ipoerpPreparePgUserAndTablespace.sh"
+echo "07) Update OpenERP source code."
 su oerp_user_z -c "source $DEFDIR/ipoerpUpdateOpenErpSourceCode.sh"
+echo "08) Patch OpenERP Launcher"
 su oerp_user_z -c "source $DEFDIR/ipoerpPatchOpenErpLauncher.sh"
+echo "09) Pip install to virtual environment"
 su oerp_user_z -c "source $DEFDIR/ipoerpPipInstallToVEnv.sh"
+echo "10) Make the UPStart script"
 source $DEFDIR/ipoerpMakeUpStartScript.sh
 #
 else
 #
-source $DEFDIR/iredmailInstallAll.sh
+echo "Done it!"
 #
 fi
-exit 0
+
 
