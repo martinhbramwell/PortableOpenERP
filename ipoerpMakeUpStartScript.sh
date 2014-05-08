@@ -1,8 +1,20 @@
 #!/bin/bash
 #
-rm -f /etc/init.d/oerp-site_z
-echo "Creating /etc/init.d/oerp-site_z"
-cat <<WRITTEN> /etc/init.d/oerp-site_z
+if [[ -z ${SITENAME} || -z ${SITEUSER} ]]
+then
+#
+echo "Usage :  ./ipoerpPrepareUsersAndDirectories.sh  "
+echo "With required variables :"
+echo " - SITENAME : ${SITENAME}"
+echo " - SITEUSER : ${SITEUSER}"
+exit 0
+#
+fi
+#
+export SCRIPTNAME="oerp-${SITENAME}"
+rm -f /etc/init.d/${SCRIPTNAME}
+echo "Creating /etc/init.d/${SCRIPTNAME}"
+cat <<WRITTEN> /etc/init.d/${SCRIPTNAME}
 #!/bin/bash
 
 ### BEGIN INIT INFO
@@ -19,20 +31,17 @@ cat <<WRITTEN> /etc/init.d/oerp-site_z
 
 PATH=/bin:/sbin:/usr/bin
 
-# The name given to this site
-SITE_NAME=z
-
 # The derived name for this upstart script
-NAME=oerp-site_\${SITE_NAME}
+NAME=\${SCRIPTNAME}
 
 # The derived description upstart will use for this process
 DESC=server_openerp_\${SITE_NAME}
 
 # The derived location user name under which this site will execute
-USER=oerp_user_\${SITE_NAME}
+USER=\${SITEUSER}
 
 # The derived name for this site's location
-SITE_DIR_NAME=site_\${SITE_NAME}
+SITE_DIR_NAME=\${SITENAME}
 
 # The derived location for this site's configuration files
 CONFIGFILE=/srv/\${SITE_DIR_NAME}/openerp-server.conf
@@ -44,7 +53,7 @@ BASE_DIR=/srv/\${SITE_DIR_NAME}/openerp
 DAEMON=\${BASE_DIR}/server/openerp-server
 
 # The name of the active database for this site
-DB_NAME=site_\${SITE_NAME}_db
+DB_NAME=\${SITENAME}_db
 
 # Additional options that are passed to the Daemon.
 DAEMON_OPTS="-c \$CONFIGFILE --db-filter=\$DB_NAME"
@@ -110,7 +119,7 @@ esac
 
 exit 0
 WRITTEN
-chmod 700 /etc/init.d/oerp-site_z
+chmod 700 /etc/init.d/${SCRIPTNAME}
 #
 echo "Opening port for http access"
 VAR=$(expect -c '
