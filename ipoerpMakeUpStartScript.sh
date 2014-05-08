@@ -63,8 +63,8 @@ checkpid() {
     return 1
 }
 
-# BACKGROUND=" --background"
-BACKGROUND=""
+BACKGROUND=" --background"
+# BACKGROUND=""
 
 case "\${1}" in
         start)
