@@ -27,7 +27,7 @@ then
 		echo "Stepped out to $(pwd)"
 	else
 		echo "Checking out lp:openobject-server"
-#		bzr checkout lightweight lp:openobject-server
+		bzr checkout lightweight lp:openobject-server
 	fi
 	#
 	if [ -d openobject-addons ]
@@ -40,7 +40,7 @@ then
 		#
 	else
 		echo "Checking out lp:openobject-addons"
-#		bzr checkout lightweight lp:openobject-addons
+		bzr checkout lightweight lp:openobject-addons
 	fi
 	#
 	if [ -d openerp-web ]
@@ -52,7 +52,7 @@ then
 		echo "Stepped out to $(pwd)"
 	else
 		echo "Checking out lp:openerp-web"
-#		bzr checkout lightweight lp:openerp-web
+		bzr checkout lightweight lp:openerp-web
 	fi
 	#
 	popd
@@ -78,6 +78,5 @@ echo "Stepped out to $(pwd)"
 popd
 echo "Stepped out to $(pwd)"
 #
-exit
 
 
