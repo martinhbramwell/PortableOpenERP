@@ -50,14 +50,17 @@ source $DEFDIR/ipoerpMakeOerpServerConfigFile.sh
 echo "06) Prepare PostgreSQL User and Tablespace"
 su postgres -c "source $DEFDIR/ipoerpPreparePgUserAndTablespace.sh"
 #
-echo "09) Pip install to virtual environment"
-su ${OERPUSR} -c "source $DEFDIR/ipoerpPipInstallToVEnv.sh"
-#
 echo "07) Update OpenERP source code."
 su ${OERPUSR} -c "source $DEFDIR/ipoerpUpdateOpenErpSourceCode.sh"
 #
 echo "08) Patch OpenERP Launcher"
 su ${OERPUSR} -c "source $DEFDIR/ipoerpPatchOpenErpLauncher.sh"
+#
+echo "09) Pip install to virtual environment"
+su ${OERPUSR} -c "source $DEFDIR/ipoerpPipInstallToVEnv.sh"
+#
+echo "10) Make the UPStart script"
+source $DEFDIR/ipoerpMakeUpStartScript.sh
 #
 echo "Finished! A reboot will be required."
 echo "Give it 5 mins, then visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
@@ -65,9 +68,6 @@ echo "Give it 5 mins, then visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS
 else
 #
 echo "Starting partial execution!"
-#
-echo "10) Make the UPStart script"
-source $DEFDIR/ipoerpMakeUpStartScript.sh
 #
 echo "Partial run complete!"
 #
