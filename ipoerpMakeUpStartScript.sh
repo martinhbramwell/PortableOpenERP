@@ -1,12 +1,13 @@
 #!/bin/bash
 #
-if [[ -z ${SITENAME} || -z ${SITEUSER} ]]
+if [[ -z ${SITENAME} || -z ${SITEUSER} || -z ${OERPUSR} ]]
 then
 #
-echo "Usage :  ./ipoerpPrepareUsersAndDirectories.sh  "
+echo "Usage :  ./ipoerpMakeUpStartScript.sh  "
 echo "With required variables :"
 echo " - SITENAME : ${SITENAME}"
 echo " - SITEUSER : ${SITEUSER}"
+echo " - OERPUSER : ${OERPUSR}"
 exit 0
 #
 fi
@@ -38,7 +39,7 @@ NAME=\${SCRIPTNAME}
 DESC=server_openerp_\${SITE_NAME}
 
 # The derived location user name under which this site will execute
-USER=\${SITEUSER}
+USER=\${OERPUSER}
 
 # The derived name for this site's location
 SITE_DIR_NAME=\${SITENAME}
