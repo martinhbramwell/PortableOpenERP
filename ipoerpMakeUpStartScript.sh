@@ -1,13 +1,13 @@
 #!/bin/bash
 #
-if [[ -z ${SITENAME} || -z ${SITEUSER} || -z ${OERPUSR} ]]
+if [[ -z ${SITENAME} || -z ${OERPUSR} || -z ${ACCESS_PORT} ]]
 then
 #
 echo "Usage :  ./ipoerpMakeUpStartScript.sh  "
 echo "With required variables :"
 echo " - SITENAME : ${SITENAME}"
-echo " - SITEUSER : ${SITEUSER}"
-echo " - OERPUSER : ${OERPUSR}"
+echo " -  OERPUSR : ${OERPUSR}"
+echo " -  ACCESS_PORT : ${ACCESS_PORT}"
 exit 0
 #
 fi
@@ -33,16 +33,17 @@ cat <<WRITTEN> /etc/init.d/${SCRIPTNAME}
 PATH=/bin:/sbin:/usr/bin
 
 # The derived name for this upstart script
-NAME=\${SCRIPTNAME}
+NAME=${SCRIPTNAME}
+
+# The derived location user name under which this site will execute
+USER=${OERPUSR}
+
+# The derived name for this site's location
+SITE_DIR_NAME=${SITENAME}
+#
 
 # The derived description upstart will use for this process
 DESC=server_openerp_\${SITE_NAME}
-
-# The derived location user name under which this site will execute
-USER=\${OERPUSER}
-
-# The derived name for this site's location
-SITE_DIR_NAME=\${SITENAME}
 
 # The derived location for this site's configuration files
 CONFIGFILE=/srv/\${SITE_DIR_NAME}/openerp-server.conf
@@ -54,7 +55,7 @@ BASE_DIR=/srv/\${SITE_DIR_NAME}/openerp
 DAEMON=\${BASE_DIR}/server/openerp-server
 
 # The name of the active database for this site
-DB_NAME=\${SITENAME}_db
+DB_NAME=\${SITE_DIR_NAME}_db
 
 # Additional options that are passed to the Daemon.
 DAEMON_OPTS="-c \$CONFIGFILE --db-filter=\$DB_NAME"
@@ -120,7 +121,7 @@ esac
 
 exit 0
 WRITTEN
-chmod 700 /etc/init.d/${SCRIPTNAME}
+chmod 755 /etc/init.d/${SCRIPTNAME}
 #
 echo "Opening port for http access"
 VAR=$(expect -c '
@@ -132,6 +133,6 @@ VAR=$(expect -c '
 #
 echo $VAR
 #
-ufw allow 8019
+ufw allow ${ACCESS_PORT}
 #
 exit 0
