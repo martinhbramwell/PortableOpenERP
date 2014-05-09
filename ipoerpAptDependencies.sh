@@ -2,7 +2,7 @@
 #
 apt-get install aptitude
 #
-sudo add-apt-repository ppa:ubuntu-clamav/ppa
+sudo add-apt-repository -y ppa:ubuntu-clamav/ppa
 #
 sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y dist-upgrade && sudo apt-get -y clean && sudo apt-get -y autoremove
 #
