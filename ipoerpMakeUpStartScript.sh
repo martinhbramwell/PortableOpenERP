@@ -123,16 +123,23 @@ exit 0
 WRITTEN
 chmod 755 /etc/init.d/${SCRIPTNAME}
 #
-echo "Opening port for http access"
-VAR=$(expect -c '
-  spawn ufw enable
-  expect "Command may disrupt existing ssh connections. Proceed with operation (y|n)?"
-  send "y\n"
-  expect eof
-')
+cat <<PATCHEOF> /etc/default/iptables.patch
+--- /etc/default/iptables       2014-05-09 13:29:26.779041999 -0400
++++ /etc/default/iX     2014-05-09 13:09:42.635041999 -0400
+@@ -35,6 +35,9 @@
+ # Loop device.
+ -A INPUT -i lo -j ACCEPT
+ 
++# OpenERP XMLRPC
++-A INPUT -p tcp -m tcp --dport ${ACCESS_PORT} -j ACCEPT
++
+ # http, https
+ -A INPUT -p tcp --dport 80 -j ACCEPT
+ -A INPUT -p tcp --dport 443 -j ACCEPT
+
+PATCHEOF
 #
-echo $VAR
+patch -u /etc/default/iptables /etc/default/iptables.patch
 #
-ufw allow ${ACCESS_PORT}
+cat /etc/default/iptables
 #
-exit 0
