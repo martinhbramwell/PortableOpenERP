@@ -33,10 +33,10 @@ mkdir -p $OERPUSR_HOME/server/
 mkdir -p $OERPUSR_HOME/log
 mkdir -p $OERPUSR_HOME/.local
 touch $OERPUSR_HOME/.bzr.log
-chown -R oerp_user_z:oerp_user_z $OERPUSR_HOME/source
-chown -R oerp_user_z:oerp_user_z $OERPUSR_HOME/server
-chown -R oerp_user_z:oerp_user_z $OERPUSR_HOME/log
-chown -R oerp_user_z:oerp_user_z $OERPUSR_HOME/.bzr.log
-chown -R oerp_user_z:oerp_user_z $OERPUSR_HOME/.local
+chown -R $OERPUSR:$OERPUSR $OERPUSR_HOME/source
+chown -R $OERPUSR:$OERPUSR $OERPUSR_HOME/server
+chown -R $OERPUSR:$OERPUSR $OERPUSR_HOME/log
+chown -R $OERPUSR:$OERPUSR $OERPUSR_HOME/.bzr.log
+chown -R $OERPUSR:$OERPUSR $OERPUSR_HOME/.local
 
 
