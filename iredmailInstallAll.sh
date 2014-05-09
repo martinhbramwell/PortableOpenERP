@@ -124,4 +124,3 @@ echo $VAR
 #
 ufw allow 8019
 #
-exit 0
