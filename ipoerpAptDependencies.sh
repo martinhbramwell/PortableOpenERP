@@ -2,6 +2,10 @@
 #
 apt-get install aptitude
 #
+sudo add-apt-repository ppa:ubuntu-clamav/ppa
+#
+sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y dist-upgrade && sudo apt-get -y clean && sudo apt-get -y autoremove
+#
 aptitude -y install python ghostscript graphviz libfreetype6-dev python-pdftools
 aptitude -y install libldap2-dev libjpeg-dev libsasl2-dev libpq-dev libxml2 git curl
 aptitude -y install libxslt1-dev libxml2-dev lptools poppler-utils python-pip expect
