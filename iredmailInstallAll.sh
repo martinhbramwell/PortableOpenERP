@@ -103,24 +103,3 @@ echo "Make iRedMail installer executable."
 chmod a+x iRedMail.sh
 #
 $DEFDIR/iredmailUnattendedInstall.sh $(pwd)
-exit
-#
-echo "Executing iRedMail installer"
-VAR=$(expect -c '
-  bash iRedMail.sh
-  expect eof
-')
-#
-#  expect "Command may disrupt existing ssh connections. Proceed with operation (y|n)?"
-#  send "y\n"
-#
-echo "Exiting ${INSTALLERS}/iRedMail"
-popd
-echo "Exiting ${INSTALLERS}"
-popd
-exit
-#
-echo $VAR
-#
-ufw allow 8019
-#
