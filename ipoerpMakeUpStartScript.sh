@@ -143,3 +143,7 @@ patch -u /etc/default/iptables /etc/default/iptables.patch
 #
 cat /etc/default/iptables
 #
+service ${SCRIPTNAME} restart
+service iptables restart
+ifdown eth0 && ifup eth0
+
