@@ -2,34 +2,11 @@
 #
 DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
 #
-# Define the name of the OpenERP site
-export SITENAME="site_y"
-export SITEUSER="user_y"
 #
-# Define the host name and domain to be used for this machine
-export NEWHOSTNAME=""
-export NEWHOSTDOMAIN=""
+# Load environment variables
+source $DEFDIR/Parameters.sh
 #
-# Define the identifiers OpenERP will use to connect to postgres
-export PSQLUSR="psql_${SITEUSER}"
-export PSQLUSR_HOME="/srv/${SITENAME}/postgres"
-export PSQLUSRPWD=""
-#
-# Define the initial database for OpenERP
-export PSQLUSRTBSP="${SITENAME}"
-export PSQLUSRDB="${SITENAME}_db"
-#
-# Define the identifiers OpenERP will use within the OS
-export OERPUSR="oerp_${SITEUSER}"
-export OERPUSR_HOME="/srv/${SITENAME}/openerp"
-#
-# Specify OpenERP XMLRPC port #
-export ACCESS_PORT=8029
-#
-# Installers directory
-export INSTALLERS=~/installers
-#
-if [[  1 -eq 0  ]]
+if [[  -z ${PARTIAL_BUILD}  ]]
 then
 #
 echo "01) Fulfill all aptitude dependencis"
@@ -69,6 +46,9 @@ echo "Login  : admin:${PSQLUSRPWD}"
 else
 #
 echo "Starting partial execution!"
+#
+echo "11) Install new volume"
+source $DEFDIR/ipoerpInstallNewVolume.sh
 #
 echo "Partial run complete!"
 #
