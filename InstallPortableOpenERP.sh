@@ -62,8 +62,9 @@ su ${OERPUSR} -c "source $DEFDIR/ipoerpPipInstallToVEnv.sh"
 echo "10) Make the UPStart script"
 source $DEFDIR/ipoerpMakeUpStartScript.sh
 #
-echo "Finished! A reboot will be required."
-echo "Give it 5 mins, then visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
+echo "Finished! A reboot is not required, but might be a good idea."
+echo "Visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
+echo "Login  : admin:${PSQLUSRPWD}"
 #
 else
 #
