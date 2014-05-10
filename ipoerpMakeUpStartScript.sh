@@ -58,8 +58,8 @@ DAEMON=\${BASE_DIR}/server/openerp-server
 DB_NAME=\${SITE_DIR_NAME}_db
 
 # Additional options that are passed to the Daemon.
-DAEMON_OPTS="-c \$CONFIGFILE --db-filter=\$DB_NAME"
-# DAEMON_OPTS="-c \$CONFIGFILE"
+# DAEMON_OPTS="-c \$CONFIGFILE --db-filter=\$DB_NAME"
+DAEMON_OPTS="-c \$CONFIGFILE"
 
 # Linux process identifier file name (pidfile)
 PIDFILE=/var/run/\$NAME.pid
