@@ -45,11 +45,11 @@ SITE_DIR_NAME=${SITENAME}
 # The derived description upstart will use for this process
 DESC=server_openerp_\${SITE_NAME}
 
-# The derived location for this site's configuration files
-CONFIGFILE=/srv/\${SITE_DIR_NAME}/openerp-server.conf
-
 # The derived location for this site's installation files
 BASE_DIR=/srv/\${SITE_DIR_NAME}/openerp
+
+# The derived location for this site's configuration files
+CONFIGFILE=\${BASE_DIR}/openerp-server.conf
 
 # The derived location for this site's executables
 DAEMON=\${BASE_DIR}/server/openerp-server

@@ -14,7 +14,7 @@ exit 0
 fi
 #
 
-cat <<WRITTEN > $OERPUSR_HOME/../openerp-server.conf
+cat <<WRITTEN > $OERPUSR_HOME/openerp-server.conf
 [options]
 ; the host address at which connections must arrive
 db_host = 127.0.0.1

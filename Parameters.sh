@@ -30,3 +30,7 @@ export ACCESS_PORT=8029
 # Installers directory
 export INSTALLERS=~/installers
 #
+# System device on which to install site  ** NOTHING WILL REMAIN OF ANY PRIOR CONTENT **
+export HOMEDEVICE="" # eg, "/dev/vdb"
+export DEVICELABEL="OerpSite_Y" # eg, "Volume 4775"
+#
