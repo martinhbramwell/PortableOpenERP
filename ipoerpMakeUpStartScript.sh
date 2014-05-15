@@ -1,22 +1,24 @@
 #!/bin/bash
 #
-if [[ -z ${SITENAME} || -z ${PSQLUSER} || -z ${OERPUSR} || -z ${ACCESS_PORT} ]]
+if [[ -z ${SITENAME} || -z ${PSQLUSR} || -z ${OERPUSR} || -z ${ACCESS_PORT} || -z ${OERPUSR_WORK} ]]
 then
 #
 echo "Usage :  ./ipoerpMakeUpStartScript.sh  "
 echo "With required variables :"
-echo " - SITENAME : ${SITENAME}"
-echo " -  OERPUSR : ${OERPUSR}"
-echo " -  PSQLUSR : ${PSQLUSR}"
+echo " -     SITENAME : ${SITENAME}"
+echo " -      OERPUSR : ${OERPUSR}"
+echo " -      PSQLUSR : ${PSQLUSR}"
 echo " -  ACCESS_PORT : ${ACCESS_PORT}"
+echo " - OERPUSR_WORK : ${OERPUSR_WORK}"
 exit 0
 #
 fi
 #
+export SCRIPTFILE="UpStart.sh"
 export SCRIPTNAME="oerp-${SITENAME}"
-rm -f /etc/init.d/${SCRIPTNAME}
-echo "Creating /etc/init.d/${SCRIPTNAME}"
-cat <<WRITTEN> /etc/init.d/${SCRIPTNAME}
+rm -f ${OERPUSR_WORK}/${SCRIPTFILE}
+echo "Creating ${OERPUSR_WORK}/${SCRIPTFILE}"
+cat <<WRITTEN> ${OERPUSR_WORK}/${SCRIPTFILE}
 #!/bin/bash
 
 ### BEGIN INIT INFO
@@ -115,7 +117,7 @@ case "\${1}" in
                 ;;
 
         *)
-                N=/etc/init.d/\${NAME}
+                N=${OERPUSR_WORK}/\${NAME}
                 echo "Usage: \${NAME} {start|stop|restart|force-reload}" >&2
                 exit 1
                 ;;
@@ -123,7 +125,7 @@ esac
 
 exit 0
 WRITTEN
-chmod 755 /etc/init.d/${SCRIPTNAME}
+chmod 755 ${OERPUSR_WORK}/${SCRIPTFILE}
 #
 cat <<PATCHEOF> /etc/default/iptables.patch
 --- /etc/default/iptables       2014-05-09 13:29:26.779041999 -0400
@@ -131,7 +133,7 @@ cat <<PATCHEOF> /etc/default/iptables.patch
 @@ -35,6 +35,9 @@
  # Loop device.
  -A INPUT -i lo -j ACCEPT
- 
+
 +# OpenERP XMLRPC
 +-A INPUT -p tcp -m tcp --dport ${ACCESS_PORT} -j ACCEPT
 +
@@ -145,7 +147,9 @@ patch -u /etc/default/iptables /etc/default/iptables.patch
 #
 cat /etc/default/iptables
 #
+rm -f /etc/init.d/${SCRIPTNAME}
+echo "ln -s ${OERPUSR_WORK}/${SCRIPTFILE} /etc/init.d/${SCRIPTNAME}"
+ln -s ${OERPUSR_WORK}/${SCRIPTFILE} /etc/init.d/${SCRIPTNAME}
 service ${SCRIPTNAME} restart
 service iptables restart
 ifdown eth0 && ifup eth0
-

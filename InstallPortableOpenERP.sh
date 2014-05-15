@@ -2,6 +2,12 @@
 #
 DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
 #
+export MEM=$(free | awk '/^Mem:/{print $2}')
+if (( ${MEM} < 1000000   ))
+then
+   echo "Low memory : ${MEM}kB. This may fail."
+   exit
+fi
 #
 # Load environment variables
 source $DEFDIR/CreateParameters.sh
@@ -34,6 +40,12 @@ then
  echo "08) Update OpenERP source code."
  su openerp -c "source $DEFDIR/ipoerpUpdateOpenErpSourceCode.sh"
  #
+ echo "09) Pip install to virtual environment"
+ su ${OERPUSR} -c "source $DEFDIR/ipoerpPipInstallToVEnv.sh"
+ #
+ echo "10) Patch OpenERP Launcher"
+ su ${OERPUSR} -c "source $DEFDIR/ipoerpPatchOpenErpLauncher.sh"
+ #
  echo "Finished! A reboot is not required, but might be a good idea."
  echo "Visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
  echo "Login  : admin:${PSQLUSRPWD}"
@@ -41,13 +53,6 @@ then
 else
  #
  echo "Starting partial execution!"
- #
- echo "09) Pip install to virtual environment"
- su ${OERPUSR} -c "source $DEFDIR/ipoerpPipInstallToVEnv.sh"
- exit
- #
- echo "10) Patch OpenERP Launcher"
- su ${OERPUSR} -c "source $DEFDIR/ipoerpPatchOpenErpLauncher.sh"
  #
  echo "11) Make the UPStart script"
  source $DEFDIR/ipoerpMakeUpStartScript.sh

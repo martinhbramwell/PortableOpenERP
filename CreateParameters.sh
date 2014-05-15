@@ -5,11 +5,11 @@ export SITENAME="site_y"
 export SITEUSER="user_y"
 #
 # Define the host name and domain to be used for this machine
-export NEWHOSTNAME=""
-export NEWHOSTDOMAIN=""
+export NEWHOSTNAME="mx"
+export NEWHOSTDOMAIN="justtrade.net"
 #
 # Define the identifiers OpenERP will use to connect to postgres
-export PSQLUSRPWD=""
+export PSQLUSRPWD="okmmpl,,"
 export PSQLUSR="psql_${SITEUSER}"
 export PSQLUSR_HOME="/srv/${SITENAME}/postgres"
 #
