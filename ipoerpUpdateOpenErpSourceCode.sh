@@ -60,26 +60,3 @@ then
 	echo "Stepped out to $(pwd)"
 fi
 #
-echo "Preparing Openerp \"server\" directory"
-rm -fr server/*
-cp -R source/openobject-server/* server
-#
-pushd server
-echo "Preparing Openerp \"server/addons\" directory"
-cp -R ../source/openobject-addons openerp/tmpX
-mv openerp/addons/* openerp/tmpX
-rm -fr openerp/addons
-mv openerp/tmpX openerp/addons
-echo "Preparing Openerp \"server/addons/web\" directory"
-cp -R ../source/openerp-web/addons/* openerp/addons/
-#
-# ls -l openerp/addons/base
-# ls -l openerp/addons/web_api
-# ls -l openerp/addons/website_mail
-popd
-echo "Stepped out to $(pwd)"
-echo "Setting permissions"
-chown -R openerp:${OERPUSR} server
-#
-
-

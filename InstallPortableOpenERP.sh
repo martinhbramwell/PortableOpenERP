@@ -36,15 +36,21 @@ then
  #
  echo "07) Prepare PostgreSQL User and Tablespace"
  su postgres -c "source $DEFDIR/ipoerpPreparePgUserAndTablespace.sh"
-#
+ #
  echo "08) Update OpenERP source code."
  su openerp -c "source $DEFDIR/ipoerpUpdateOpenErpSourceCode.sh"
  #
- echo "09) Pip install to virtual environment"
+ echo "09) Situate OpenERP source code."
+ source $DEFDIR/ipoerpSituateOpenErpSourceCode.sh
+ #
+ echo "10) Pip install to virtual environment"
  su ${OERPUSR} -c "source $DEFDIR/ipoerpPipInstallToVEnv.sh"
  #
- echo "10) Patch OpenERP Launcher"
+ echo "11) Patch OpenERP Launcher"
  su ${OERPUSR} -c "source $DEFDIR/ipoerpPatchOpenErpLauncher.sh"
+ #
+ echo "12) Make the UPStart script"
+ source $DEFDIR/ipoerpMakeUpStartScript.sh
  #
  echo "Finished! A reboot is not required, but might be a good idea."
  echo "Visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
@@ -53,9 +59,6 @@ then
 else
  #
  echo "Starting partial execution!"
- #
- echo "11) Make the UPStart script"
- source $DEFDIR/ipoerpMakeUpStartScript.sh
  #
  echo "Partial run ended!"
  #

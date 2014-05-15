@@ -41,8 +41,12 @@ fi
 mkdir -p                       ${OERPUSR_WORK}/source/
 chown -R    openerp:openerp    ${OERPUSR_WORK}
 #
+mkdir -p                       ${OERPUSR_WORK}/server
+rm   -fr                       ${OERPUSR_WORK}/server/*
 mkdir -p                       ${OERPUSR_WORK}/server/venv
+rm   -fr                       ${OERPUSR_WORK}/server/venv/*
 chown -R    openerp:${OERPUSR} ${OERPUSR_WORK}/server
+chmod -R                   g+w ${OERPUSR_WORK}/server
 mkdir -p                       ${OERPUSR_WORK}/log
 chown -R    openerp:${OERPUSR} ${OERPUSR_WORK}/log
 #

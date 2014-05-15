@@ -16,14 +16,17 @@ if [[  1 -eq 1  ]]
 then
  #
  VENV_PATH=${OERPUSR_WORK}/server
- cd $VENV_PATH
+ whoami
+ ls -la ${VENV_PATH}
+ ls -la ${VENV_PATH}/..
+ cd ${VENV_PATH}
  pwd
- if [[  -d  "$VENV_PATH/venv/bin" ]]
+ if [[  -d  "${VENV_PATH}/venv/bin" ]]
  then
-  echo "Found pre-existing virtual environment under $VENV_PATH"
+  echo "Found pre-existing virtual environment under ${VENV_PATH}"
  else
   virtualenv venv --system-site-packages
-  echo "Put venv in $VENV_PATH"
+  echo "Put venv in ${VENV_PATH}"
  fi
  #
  export VIRTUAL_ENV="${VENV_PATH}/venv";

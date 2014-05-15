@@ -10,8 +10,7 @@ source $DEFDIR/MountParameters.sh
 if [[  -z ${PARTIAL_BUILD}  ]]
 then
 #
-exit
-#
+echo "Get create phase parameters"
 source $DEFDIR/CreateParameters.sh
 #
 echo "01) Fulfill all aptitude dependencis"
