@@ -1,16 +1,23 @@
 #!/bin/bash
 #
-if [[  -z "$OERPUSR_HOME"  ]]
+if [[  -z "${OERPUSR_WORK}"  ]]
 then
 echo "Usage :  ./ipoerpPatchOpenErpLauncher.sh"
 echo "With required variables :"
-echo " - OERPUSR_HOME : $OERPUSR_HOME"
+echo " - OERPUSR_WORK : ${OERPUSR_WORK}"
 exit
 fi
 #
-echo "Stepping into $OERPUSR_HOME"
-cd $OERPUSR_HOME/server
+if [[  ! -f "${OERPUSR_WORK}/server/venv/bin/python"  ]]
+then
+echo "No file  \"\" has been created."
+exit
+else
 #
-sed -i.bak "s|env python|env $OERPUSR_HOME/server/venv/bin/python|g" openerp-server
+echo "Stepping into ${OERPUSR_WORK}"
+cd ${OERPUSR_WORK}/server
+sed -i.bak "s|env python|env ${OERPUSR_WORK}/server/venv/bin/python|g" openerp-server
+#
+fi
 #
 

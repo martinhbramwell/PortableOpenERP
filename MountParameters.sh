@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Choose to skip the normal command sequence
-export PARTIAL_BUILD=""  #  Non-blank means yes
+export PARTIAL_BUILD="yes"  #  Non-blank means yes
 #
 # System device on which to install site  ** NOTHING WILL REMAIN OF ANY PRIOR CONTENT **
 export HOMEDEVICE="" # eg, "/dev/vdb"

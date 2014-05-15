@@ -1,28 +1,29 @@
 #!/bin/bash
 #
-if [[  -z "$OERPUSR_HOME"  ]]
+if [[  -z "${OERPUSR_WORK}"  ||  -z "${OERPUSR}"  ]]
 then
 #
 echo "Usage :  ./ipoerpUpdateOpenErpSourceCode.sh"
 echo "With required variables :"
-echo " - OERPUSR_HOME : $OERPUSR_HOME"
+echo " - OERPUSR_WORK : ${OERPUSR_WORK}"
+echo " - OERPUSR : ${OERPUSR}"
 exit
 fi
 #
-echo "Stepping into $OERPUSR_HOME"
-cd $OERPUSR_HOME
+echo "Stepping into ${OERPUSR_WORK}"
+cd ${OERPUSR_WORK}
 #
 if [  1 -eq 1  ]
 then
 	mkdir -p source
-        echo "Stepping into $OERPUSR_HOME/source"
+        echo "Stepping into ${OERPUSR_WORK}/source"
 	pushd source
 	if [ -d openobject-server ]
 	then
-                echo "Stepping into $OERPUSR_HOME/source/openobject-server"
+                echo "Stepping into ${OERPUSR_WORK}/source/openobject-server"
 		pushd openobject-server
-		echo "Done server."
 		bzr update
+		echo "Done server."
 		popd
 		echo "Stepped out to $(pwd)"
 	else
@@ -33,8 +34,8 @@ then
 	if [ -d openobject-addons ]
 	then
 		pushd openobject-addons
-		echo "Done addons."
 		bzr update
+		echo "Done addons."
 		popd
 		echo "Stepped out to $(pwd)"
 		#
@@ -59,14 +60,17 @@ then
 	echo "Stepped out to $(pwd)"
 fi
 #
+echo "Preparing Openerp \"server\" directory"
 rm -fr server/*
 cp -R source/openobject-server/* server
 #
 pushd server
+echo "Preparing Openerp \"server/addons\" directory"
 cp -R ../source/openobject-addons openerp/tmpX
 mv openerp/addons/* openerp/tmpX
 rm -fr openerp/addons
 mv openerp/tmpX openerp/addons
+echo "Preparing Openerp \"server/addons/web\" directory"
 cp -R ../source/openerp-web/addons/* openerp/addons/
 #
 # ls -l openerp/addons/base
@@ -74,6 +78,8 @@ cp -R ../source/openerp-web/addons/* openerp/addons/
 # ls -l openerp/addons/website_mail
 popd
 echo "Stepped out to $(pwd)"
+echo "Setting permissions"
+chown -R openerp:${OERPUSR} server
 #
 
 

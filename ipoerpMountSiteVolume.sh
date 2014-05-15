@@ -72,7 +72,8 @@ else
   umount /tmp/oerp/ > /dev/null 2>&1 || :
   exit
  else
-  export OERPUSR_HOME="/srv/${SITENAME}/openerp"
+  export OERPUSR_WORK="/srv/${SITENAME}/openerp"
+  export OERPUSR_HOME="${OERPUSR_WORK}/home"
   export PSQLUSR_HOME="/srv/${SITENAME}/postgres"
   echo "OpenERP site \"${SITENAME}\" will now be mounted for users \"${USERNAME}\" and \"${PUSRNAME}\""
   mkdir -p ${OERPUSR_HOME}
@@ -102,7 +103,8 @@ else
   chown -R postgres:${PUSRNAME} ${PSQLUSR_HOME}
   chmod -R 770 ${PSQLUSR_HOME}
   #
-  chown -R openerp:${USERNAME} ${OERPUSR_HOME}
+  chown -R openerp:${USERNAME} ${OERPUSR_WORK}
+  chown -R ${USERNAME}:${USERNAME} ${OERPUSR_HOME}
   chmod -R 770 ${OERPUSR_HOME}
   #
  fi
@@ -129,7 +131,7 @@ cat <<EOFSTAB>> /etc/fstab
 #
 # Server Site :: ${SITENAME}  -- Hypervisor Volume Name <[ ${DEVICELABEL} ]>
 # - Filesystem for OpenERP : ${SITENAME}
-UUID=$(blkid -s UUID -o value ${HOMEDEVICE}${DEV_OPENERP}) ${OERPUSR_HOME}  ext4 defaults 0 2
+UUID=$(blkid -s UUID -o value ${HOMEDEVICE}${DEV_OPENERP}) ${OERPUSR_WORK}  ext4 defaults 0 2
 # - Filesystem for PostgreSQL : ${SITENAME}
 UUID=$(blkid -s UUID -o value ${HOMEDEVICE}${DEV_POSTGRES}) ${PSQLUSR_HOME} ext4 defaults 0 2
 #
@@ -168,7 +170,7 @@ then
  #
 fi
 rm -f /etc/init.d/${UPSTARTR}
-ln -s ${OERPUSR_HOME}/upstart.sh /etc/init.d/${UPSTARTR}
+ln -s ${OERPUSR_WORK}/upstart.sh /etc/init.d/${UPSTARTR}
 #
 service ${UPSTARTR} start
 #

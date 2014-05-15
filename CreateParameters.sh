@@ -19,7 +19,8 @@ export PSQLUSRDB="${SITENAME}_db"
 #
 # Define the identifiers OpenERP will use within the OS
 export OERPUSR="oerp_${SITEUSER}"
-export OERPUSR_HOME="/srv/${SITENAME}/openerp"
+export OERPUSR_WORK="/srv/${SITENAME}/openerp"
+export OERPUSR_HOME="${OERPUSR_WORK}/home"
 #
 # Specify OpenERP XMLRPC port #
 export ACCESS_PORT=8029
