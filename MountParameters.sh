@@ -1,10 +1,10 @@
 #!/bin/bash
 #
 # Choose to skip the normal command sequence
-export PARTIAL_BUILD="yes"  #  Non-blank means yes
+export PARTIAL_BUILD="no"  #  Non-blank means yes
 #
 # System device on which to install site  ** NOTHING WILL REMAIN OF ANY PRIOR CONTENT **
-export HOMEDEVICE="/dev/vdb" # eg, "/dev/vdb"
+export HOMEDEVICE="" # eg, "/dev/vdb"
 #
 #  System introspection flags. Written by volume creation process and exacted by mounting process.
 export LBL_OPENERP="OpenERP"
