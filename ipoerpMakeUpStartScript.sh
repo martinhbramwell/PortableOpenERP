@@ -1,12 +1,13 @@
 #!/bin/bash
 #
-if [[ -z ${SITENAME} || -z ${OERPUSR} || -z ${ACCESS_PORT} ]]
+if [[ -z ${SITENAME} || -z ${PSQLUSER} || -z ${OERPUSR} || -z ${ACCESS_PORT} ]]
 then
 #
 echo "Usage :  ./ipoerpMakeUpStartScript.sh  "
 echo "With required variables :"
 echo " - SITENAME : ${SITENAME}"
 echo " -  OERPUSR : ${OERPUSR}"
+echo " -  PSQLUSR : ${PSQLUSR}"
 echo " -  ACCESS_PORT : ${ACCESS_PORT}"
 exit 0
 #
@@ -35,8 +36,9 @@ PATH=/bin:/sbin:/usr/bin
 # The derived name for this upstart script
 NAME=${SCRIPTNAME}
 
-# The derived location user name under which this site will execute
+# The derived user's names under which this site will execute
 USER=${OERPUSR}
+PSQLUSER=${PSQLUSR}
 
 # The derived name for this site's location
 SITE_DIR_NAME=${SITENAME}

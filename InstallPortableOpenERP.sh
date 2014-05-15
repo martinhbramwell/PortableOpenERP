@@ -4,7 +4,8 @@ DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
 #
 #
 # Load environment variables
-source $DEFDIR/Parameters.sh
+source $DEFDIR/CreateParameters.sh
+source $DEFDIR/MountParameters.sh
 #
 if [[  -z ${PARTIAL_BUILD}  ]]
 then
@@ -18,6 +19,7 @@ source $DEFDIR/iredmailSetHostName.sh
 echo "03) Install all of iRedMail"
 source $DEFDIR/iredmailInstallAll.sh
 #
+exit
 echo "04) Prepare users and directories"
 source $DEFDIR/ipoerpPrepareUsersAndDirectories.sh
 #
@@ -50,6 +52,6 @@ echo "Starting partial execution!"
 echo "11) Install new volume"
 source $DEFDIR/ipoerpInstallNewVolume.sh
 #
-echo "Partial run complete!"
+echo "Partial run ended!"
 #
 fi

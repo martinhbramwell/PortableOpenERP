@@ -1,9 +1,6 @@
 #!/bin/bash
 #
 # Define the name of the OpenERP site
-export PARTIAL_BUILD="y"
-#
-# Define the name of the OpenERP site
 export SITENAME="site_y"
 export SITEUSER="user_y"
 #
@@ -30,7 +27,6 @@ export ACCESS_PORT=8029
 # Installers directory
 export INSTALLERS=~/installers
 #
-# System device on which to install site  ** NOTHING WILL REMAIN OF ANY PRIOR CONTENT **
-export HOMEDEVICE="" # eg, "/dev/vdb"
-export DEVICELABEL="OerpSite_Y" # eg, "Volume 4775"
+# iRedmail version
+export IREDMAILPKG="iRedMail-0.8.7"
 #

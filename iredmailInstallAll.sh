@@ -1,13 +1,14 @@
 #!/bin/bash
 #
-if [[ -z ${PSQLUSRPWD} || -z ${NEWHOSTDOMAIN} || -z ${INSTALLERS}  ]]
+if [[ -z ${PSQLUSRPWD} || -z ${NEWHOSTDOMAIN} || -z ${IREDMAILPKG} || -z ${INSTALLERS}  ]]
 then
 #
 echo "Usage :  ./iredmailInstallAll.sh"
 echo "With required variables :"
 echo " - PSQLUSRPWD : ${PSQLUSRPWD}"
 echo " - NEWHOSTDOMAIN : ${NEWNEWHOSTDOMAINHOSTDOMAIN}"
-echo " - INSTALLERS : $INSTALLERS"
+echo " - INSTALLERS : ${INSTALLERS}"
+echo " - IREDMAILPKG : ${IREDMAILPKG}"
 # echo " -  : $"
 exit 0
 #
@@ -20,7 +21,6 @@ genpasswd() {
 }
 
 export IREDMAIL="https://bitbucket.org/zhb/iredmail/downloads"
-export IREDMAILPKG="iRedMail-0.8.6"
 export IREDMAILTAR="${IREDMAILPKG}.tar.bz2"
 #
 echo "Entering ${INSTALLERS}"

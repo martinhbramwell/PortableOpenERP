@@ -1,23 +1,23 @@
 #!/bin/bash
 #
-FLAGTAG="THE-AREA-BELOW-IS-RESERVED-FOR-PATCHING"
-#
 if [[ -z ${HOMEDEVICE}  ]]
 then
 #
-echo "No target volume specified so none will be created.  Installation will got to root "/" volume"
+echo "No target volume specified so none will be created.  Installation will got to root '/' volume"
 #
 else
 #
-if [[ -z $SITENAME  || -z $DEVICELABEL  ]]
+if [[ -z ${SITENAME}}  || -z ${DEVICELABEL}  || -z ${LBL_OPENERP}  || -z ${LBL_POSTGRES}  || -z ${FLAGTAG}  ]]
 then
 #
 echo "Usage :  ./ipoerpInstallNewVolume.sh  "
 echo "With required variables :"
-echo " - SITENAME : $SITENAME"
-echo " - DEVICELABEL : $DEVICELABEL"
-echo " -  : $"
-echo " -  : $"
+echo " - SITENAME : ${SITENAME}"
+echo " - DEVICELABEL : ${DEVICELABEL}"
+echo " - LBL_OPENERP : ${LBL_OPENERP}"
+echo " - LBL_POSTGRES : ${LBL_POSTGRES}"
+echo " - FLAGTAG : ${FLAGTAG}"
+# echo " -  : ${}"
 #
 else
 #
@@ -47,13 +47,13 @@ echo "Show freespace"
 echo "=============="
 parted -s /dev/vdb unit s p free
 #
-echo "Initialize filesystem #1"
-echo "========================"
-mkfs --type ext4 /dev/vdb1
+echo "Initialize filesystem #1 (for OpenERP)"
+echo "======================================"
+mkfs -L ${LBL_OPENERP] --type ext4 /dev/vdb1
 #
-echo "Initialize filesystem #2"
-echo "========================"
-mkfs --type ext4 /dev/vdb2
+echo "Initialize filesystem #2 (for PostgreSQL)"
+echo "========================================="
+mkfs -L ${LBL_POSTGRES} --type ext4 /dev/vdb2
 #
 echo "Show freespace"
 echo "=============="
@@ -100,6 +100,9 @@ echo "===================="
 mount -a
 #
 tree -L 2 /srv/$SITENAME
+cat <<META>> /srv/${SITENAME}/openerp/meta.txt
+${SITENAME}
+META
 #
 fi
 #
