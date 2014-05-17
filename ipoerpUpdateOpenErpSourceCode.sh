@@ -10,6 +10,9 @@ echo " - OERPUSR : ${OERPUSR}"
 exit
 fi
 #
+echo $(whoami)
+ls /opt/open*
+#
 echo "Stepping into ${OERPUSR_WORK}"
 cd ${OERPUSR_WORK}
 #

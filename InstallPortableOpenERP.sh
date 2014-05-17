@@ -2,16 +2,27 @@
 #
 DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
 #
-export MEM=$(free | awk '/^Mem:/{print $2}')
-if (( ${MEM} < 1000000   ))
-then
-   echo "Low memory : ${MEM}kB. This may fail."
-   exit
-fi
-#
 # Load environment variables
 source $DEFDIR/CreateParameters.sh
 source $DEFDIR/MountParameters.sh
+#
+ls -l ${HOMEDEVICE} 2> /dev/null
+if [[  $? -gt 0  ]]
+then
+   echo "
+Did not detect ${HOMEDEVICE}.   Quitting . . .
+"
+   exit 2
+fi
+#
+export MEM=$(free | awk '/^Mem:/{print $2}')
+if (( ${MEM} < 1000000   ))
+then
+   echo "
+Low memory : ${MEM}kB.    Quitting . . .
+"
+   exit 1
+fi
 #
 if [[  -z ${PARTIAL_BUILD}  ]]
 then
@@ -29,15 +40,21 @@ then
  source $DEFDIR/ipoerpInstallNewVolume.sh
  #
  echo "05) Prepare users and directories"
+ ls -l /opt/opener*
  source $DEFDIR/ipoerpPrepareUsersAndDirectories.sh
  #
  echo "06) Generate OpenERP server configuration file"
+ ls -l /opt/opener*
  source $DEFDIR/ipoerpMakeOerpServerConfigFile.sh
  #
  echo "07) Prepare PostgreSQL User and Tablespace"
+ ls -l /opt/opener*
  su postgres -c "source $DEFDIR/ipoerpPreparePgUserAndTablespace.sh"
  #
  echo "08) Update OpenERP source code."
+# chown -R openerp:openerp /opt/openerp
+# chmod -R 660 /opt/openerp
+ ls -l /opt/opener*
  su openerp -c "source $DEFDIR/ipoerpUpdateOpenErpSourceCode.sh"
  #
  echo "09) Situate OpenERP source code."
