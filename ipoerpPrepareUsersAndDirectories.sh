@@ -28,9 +28,9 @@ chown -R postgres:${PSQLUSR} ${PSQLUSR_HOME}
 chmod -R 770 ${PSQLUSR_HOME}
 #
 mkdir -p /opt/openerp
+[[  1 -gt $(getent passwd | grep -c "^openerp") ]] && useradd -d /opt/openerp openerp
 touch /opt/openerp/.bzr.log
 chown -R openerp:openerp /opt/openerp
-[[  1 -gt $(getent passwd | grep -c "^openerp") ]] && useradd -d /opt/openerp openerp
 #
 if [[  1 -gt $(getent passwd | grep -c "^${OERPUSR}")  ]]
 then

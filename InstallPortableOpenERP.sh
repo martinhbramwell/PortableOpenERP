@@ -40,21 +40,15 @@ then
  source $DEFDIR/ipoerpInstallNewVolume.sh
  #
  echo "05) Prepare users and directories"
- ls -l /opt/opener*
  source $DEFDIR/ipoerpPrepareUsersAndDirectories.sh
  #
  echo "06) Generate OpenERP server configuration file"
- ls -l /opt/opener*
  source $DEFDIR/ipoerpMakeOerpServerConfigFile.sh
  #
  echo "07) Prepare PostgreSQL User and Tablespace"
- ls -l /opt/opener*
  su postgres -c "source $DEFDIR/ipoerpPreparePgUserAndTablespace.sh"
  #
  echo "08) Update OpenERP source code."
-# chown -R openerp:openerp /opt/openerp
-# chmod -R 660 /opt/openerp
- ls -l /opt/opener*
  su openerp -c "source $DEFDIR/ipoerpUpdateOpenErpSourceCode.sh"
  #
  echo "09) Situate OpenERP source code."
