@@ -15,117 +15,40 @@ exit 0
 fi
 #
 export SCRIPTFILE="UpStart.sh"
-export SCRIPTNAME="oerp-${SITENAME}"
+export SCRIPTNAME="odoo-${SITENAME}"
 rm -f ${OERPUSR_WORK}/${SCRIPTFILE}
 echo "Creating ${OERPUSR_WORK}/${SCRIPTFILE}"
 cat <<WRITTEN> ${OERPUSR_WORK}/${SCRIPTFILE}
-#!/bin/bash
-
-### BEGIN INIT INFO
-# Provides:             openerp-server
-# Required-Start:       \$remote_fs \$syslog
-# Required-Stop:        \$remote_fs \$syslog
-# Should-Start:         \$network
-# Should-Stop:          \$network
-# Default-Start:        2 3 4 5
-# Default-Stop:         0 1 6
-# Short-Description:    Enterprise Resource Management software
-# Description:          Open ERP is a complete ERP and CRM software.
-### END INIT INFO
-
-PATH=/bin:/sbin:/usr/bin
-
-# The derived name for this upstart script
-NAME=${SCRIPTNAME}
-
-# The derived user's names under which this site will execute
-USER=${OERPUSR}
-PSQLUSER=${PSQLUSR}
-
-# The derived name for this site's location
-SITE_DIR_NAME=${SITENAME}
+# Upstart script for this Odoo application
 #
-
-# The derived description upstart will use for this process
-DESC=server_openerp_${SITE_NAME}
-
-# The derived location for this site's installation files
-BASE_DIR=/srv/\${SITE_DIR_NAME}/openerp
-
-# The derived location for this site's configuration files
-CONFIGFILE=\${BASE_DIR}/openerp-server.conf
-
-# The derived location for this site's executables
-DAEMON=\${BASE_DIR}/server/openerp-server
-
-# The name of the active database for this site
-DB_NAME=\${SITE_DIR_NAME}_db
-
-# Additional options that are passed to the Daemon.
-# DAEMON_OPTS="-c \$CONFIGFILE --db-filter=\$DB_NAME"
-DAEMON_OPTS="-c \$CONFIGFILE"
-
-# Linux process identifier file name (pidfile)
-PIDFILE=/var/run/\$NAME.pid
-
-[ -x \$DAEMON ] || exit 0
-[ -f \$CONFIGFILE ] || exit 0
-
-checkpid() {
-    [ -f \$PIDFILE ] || return 1
-    pid=\`cat \$PIDFILE\`
-    [ -d /proc/\$pid ] && return 0
-    return 1
-}
-
-BACKGROUND=" --background"
-# BACKGROUND=""
-
-case "\${1}" in
-        start)
-                echo -n "Starting \${DESC}: "
-
-                start-stop-daemon --start --quiet --pidfile \${PIDFILE} \\
-                        --chuid \${USER} \${BACKGROUND} --make-pidfile \\
-                        --exec \${DAEMON} -- \${DAEMON_OPTS}
-
-                echo "\${NAME}."
-                ;;
-
-        stop)
-                echo -n "Stopping \${DESC}: "
-
-                start-stop-daemon --stop --quiet --pidfile \${PIDFILE} \\
-                        --oknodo
-
-                echo "\${NAME}."
-                ;;
-
-        restart|force-reload)
-                echo -n "Restarting \${DESC}: "
-
-                start-stop-daemon --stop --quiet --pidfile \${PIDFILE} \\
-                        --oknodo
-
-                sleep 1
-
-                start-stop-daemon --start --quiet --pidfile \${PIDFILE} \\
-                        --chuid \${USER} --background --make-pidfile \\
-                        --exec \${DAEMON} -- \${DAEMON_OPTS}
-
-                echo "\${NAME}."
-                ;;
-
-        *)
-                N=${OERPUSR_WORK}/\${NAME}
-                echo "Usage: \${NAME} {start|stop|restart|force-reload}" >&2
-                exit 1
-                ;;
-esac
-
-exit 0
+export SITE_USER=${OERPUSR}
+export ODOO_BASE=${OERPUSR_WORK}
+export UPSTART_JOB=${SCRIPTNAME}
+#
+export ODOO_EXEC=openerp-server
+export ODOO_CONF=openerp-server.conf
+#
+export ODOO_HOME=\${ODOO_BASE}/server
+#
+echo "[\$(date --rfc-3339=seconds)] \$(whoami) starting \${ODOO_HOME}/\${ODOO_EXEC} -c \${ODOO_BASE}/\${ODOO_CONF}" >> /var/log/upstart/\${UPSTART_JOB}.log
+exec su \${SITE_USER} -s /bin/sh -c '\${ODOO_HOME}/\${ODOO_EXEC} -c \${ODOO_BASE}/\${ODOO_CONF}'
 WRITTEN
+echo "Fixing permission on ${OERPUSR_WORK}/${SCRIPTFILE}"
 chmod 755 ${OERPUSR_WORK}/${SCRIPTFILE}
+
+
+cat <<UPSTART> /etc/init/${SCRIPTNAME}.conf
+respawn
+respawn limit 1 5
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+env EXEC_PATH="${OERPUSR_WORK}/${SCRIPTFILE}"
+
+exec su -s /bin/bash -c \${EXEC_PATH}
+UPSTART
+
 #
 cat <<PATCHEOF> /etc/default/iptables.patch
 --- /etc/default/iptables       2014-05-09 13:29:26.779041999 -0400
@@ -147,9 +70,9 @@ patch -u /etc/default/iptables /etc/default/iptables.patch
 #
 cat /etc/default/iptables
 #
-rm -f /etc/init.d/${SCRIPTNAME}
-echo "ln -s ${OERPUSR_WORK}/${SCRIPTFILE} /etc/init.d/${SCRIPTNAME}"
-ln -s ${OERPUSR_WORK}/${SCRIPTFILE} /etc/init.d/${SCRIPTNAME}
-service ${SCRIPTNAME} restart
+echo "Trying upstart : ${SCRIPTNAME}"
+stop ${SCRIPTNAME}
+start ${SCRIPTNAME}
+#
 service iptables restart
 ifdown eth0 && ifup eth0
