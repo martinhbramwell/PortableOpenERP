@@ -55,6 +55,8 @@ export ODOO_CONF=openerp-server.conf
 export ODOO_HOME=\${ODOO_BASE}/server
 #
 #  Not needed here but required when moving this site to a new machine.
+export PSQL_USER=${PSQLUSR}
+#
 declare -A GROUP_IDS=(
 [$(getent passwd ${POSTGRESUSR} | cut -f 4 -d:)]=${POSTGRESUSR}
 [$(getent passwd ${OPENERPUSR} | cut -f 4 -d:)]=${OPENERPUSR}

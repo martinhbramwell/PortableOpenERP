@@ -22,10 +22,6 @@ export OERPUSR="oerp_${SITEUSER}"
 export OERPUSR_WORK="/srv/${SITENAME}/openerp"
 export OERPUSR_HOME="${OERPUSR_WORK}/home"
 #
-# Generic names
-export POSTGRESUSR="postgres"
-export OPENERPUSR="openerp"
-#
 # Specify OpenERP XMLRPC port #
 export ACCESS_PORT=8029
 #

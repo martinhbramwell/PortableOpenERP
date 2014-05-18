@@ -11,7 +11,11 @@ export LBL_OPENERP="OpenERP"
 export LBL_POSTGRES="PostgreSQL"
 export FLAGTAG="THE-AREA-BELOW-IS-RESERVED-FOR-PATCHING"
 #
+# Generic names
+export POSTGRESUSR="postgres"
+export OPENERPUSR="openerp"
+#
 # The hypervisor label used for this device, if such is required.
-export DEVICELABEL="Oerp_Movable" # eg, "Volume 4775"
+export DEVICELABEL="TempSourceDrv" # eg, "Volume 4775"
 #
 

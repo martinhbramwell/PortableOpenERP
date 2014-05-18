@@ -58,10 +58,10 @@ then
  exit
 else
  echo "OpenERP configuration detected"
- export UPSTARTR=$(cat /tmp/odoo/UpStart.sh | sed -n -e "s/^export UPSTART_JOB=//p")
- export SITENAME=$(cat /tmp/odoo/UpStart.sh | sed -n -e "s/^export SITE_NAME=//p")
- export USERNAME=$(cat /tmp/odoo/UpStart.sh | sed -n -e "s/^export SITE_USER=//p")
- export PUSRNAME=$(cat /tmp/odoo/UpStart.sh | sed -n -e "s/^export PSQL_USER=//p")
+ export UPSTARTR=$(cat /tmp/odoo/UpStartVars.sh | sed -n -e "s/^export UPSTART_JOB=//p")
+ export SITENAME=$(cat /tmp/odoo/UpStartVars.sh | sed -n -e "s/^export SITE_NAME=//p")
+ export USERNAME=$(cat /tmp/odoo/UpStartVars.sh | sed -n -e "s/^export SITE_USER=//p")
+ export PUSRNAME=$(cat /tmp/odoo/UpStartVars.sh | sed -n -e "s/^export PSQL_USER=//p")
  if [[ -z ${UPSTARTR} || -z ${SITENAME} || -z ${USERNAME} || -z ${PUSRNAME} ]]
  then
   echo "Missing one or both of :"
@@ -75,27 +75,28 @@ else
   export SITEBASE="/srv/${SITENAME}"
   export OERPUSR_WORK="${SITEBASE}/${OPENERPUSR}"
   export OERPUSR_HOME="${OERPUSR_WORK}/home"
-  export PSQLUSR_HOME="/${SITEBASE}/${POSTGRESUSR}"
+  export PSQLUSR_HOME="${SITEBASE}/${POSTGRESUSR}"
   echo "OpenERP site \"${SITENAME}\" will now be mounted for users \"${USERNAME}\" and \"${PUSRNAME}\".  Upstart job name : \"${UPSTARTR}\"."
   echo "Mount points \"${OERPUSR_WORK}\" and \"${PSQLUSR_HOME}\" ."
+  #
   mkdir -p ${OERPUSR_WORK}
   mkdir -p ${PSQLUSR_HOME}
   #
-  if [[  1 -gt $(getent passwd | grep -c "^${PUSRNAME}")  ]]
+  if [[  1 -gt $(getent passwd ${PUSRNAME} | grep -c "^${PUSRNAME}")  ]]
   then
-   echo "Creating \"${PUSRNAME}\""
+   echo "Creating user \"${PUSRNAME}\""
    useradd -d ${PSQLUSR_HOME} ${PUSRNAME}
    usermod -a -G ${POSTGRESUSR} ${PUSRNAME}
   fi
   #
   mkdir -p /opt/${OPENERPUSR}
-  if [[  1 -gt $(getent passwd | grep -c "^${OPENERPUSR}")  ]]
+  if [[  1 -gt $(getent passwd ${OPENERPUSR} | grep -c "^${OPENERPUSR}")  ]]
   then
    echo "Creating user \"${OPENERPUSR}\""
    useradd -d /opt/${OPENERPUSR} ${OPENERPUSR}
   fi
   #
-  if [[  1 -gt $(getent passwd | grep -c "^${USERNAME}")  ]]
+  if [[  1 -gt $(getent passwd ${USERNAME} | grep -c "^${USERNAME}")  ]]
   then
    echo "Creating user \"${USERNAME}\" "
    useradd -d ${OERPUSR_HOME} ${USERNAME}
@@ -166,7 +167,7 @@ then
  #
 fi
 #
-#
+source ${OERPUSR_WORK}/UpStartVars.sh
 if [[  0 -eq 1  ]]
 then
   #
@@ -187,11 +188,23 @@ then
 fi
 #
 echo "Remounted /etc/fstab"
-exit
-rm -f /etc/init.d/${UPSTARTR}
-ln -s ${OERPUSR_WORK}/upstart.sh /etc/init.d/${UPSTARTR}
 #
-service ${UPSTARTR} start
+echo "Creating /etc/init/${UPSTART_JOB}.conf  that calls  ${OERPUSR_WORK}/UpStart.sh"
+rm -f /etc/init/${UPSTART_JOB}.conf
+# .  .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .
+cat <<UPSTART> /etc/init/${UPSTART_JOB}.conf
+respawn
+respawn limit 1 5
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+env EXEC_PATH="${OERPUSR_WORK}/UpStart.sh"
+
+exec su -s /bin/bash -c \${EXEC_PATH}
+UPSTART
+#
+start ${UPSTART_JOB}
 #
 fi
 #
