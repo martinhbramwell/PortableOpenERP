@@ -27,9 +27,9 @@ rm -f ${OERPUSR_WORK}/${SCRIPTFILE}
 cat <<UPSTARTSCR> ${OERPUSR_WORK}/${SCRIPTFILE}
 # Upstart script for this Odoo application
 #
-DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
+DEFDIR=\${0%/*}  #  Default directory of caller; maintains script portability.
 #
-source \${DEFDIR}/${SCRIPTFILEVARS}.sh
+source \${DEFDIR}/${SCRIPTFILEVARS}
 #
 echo "[\$(date --rfc-3339=seconds)] \$(whoami) starting \${ODOO_HOME}/\${ODOO_EXEC} -c \${ODOO_BASE}/\${ODOO_CONF}" >> /var/log/upstart/\${UPSTART_JOB}.log
 exec su \${SITE_USER} -s /bin/sh -c '\${ODOO_HOME}/\${ODOO_EXEC} -c \${ODOO_BASE}/\${ODOO_CONF}'
