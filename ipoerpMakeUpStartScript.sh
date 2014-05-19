@@ -1,6 +1,7 @@
 #!/bin/bash
 #
-if [[ -z ${SITENAME} || -z ${POSTGRESUSR} || -z ${OPENERPUSR} || -z ${PSQLUSR} || -z ${OERPUSR} || -z ${OERPUSR_WORK} ]]
+if [[ -z ${SITENAME} || -z ${POSTGRESUSR} || -z ${OPENERPUSR} || -z ${PSQLUSR} || -z ${OERPUSR} || -z ${OERPUSR_WORK} ||
+ -z $PSQLUSRPWD  || -z $PSQLUSRTBSP  || -z $PSQLUSRDB  || -z $PSQLUSR_HOME  ]]
 then
 #
 echo "Usage :  ./ipoerpMakeUpStartScript.sh  "
@@ -11,6 +12,10 @@ echo " -  OPENERPUSR  : ${OPENERPUSR}"
 echo " -      OERPUSR : ${OERPUSR}"
 echo " -      PSQLUSR : ${PSQLUSR}"
 echo " - OERPUSR_WORK : ${OERPUSR_WORK}"
+echo " -   PSQLUSRPWD : $PSQLUSRPWD"
+echo " - PSQLUSR_HOME : $PSQLUSR_HOME"
+echo " -  PSQLUSRTBSP : $PSQLUSRTBSP"
+echo " -    PSQLUSRDB : $PSQLUSRDB"
 exit 0
 #
 fi
@@ -41,6 +46,8 @@ echo "Creating ${OERPUSR_WORK}/${SCRIPTFILEVARS}"
 rm -f ${OERPUSR_WORK}/${SCRIPTFILEVARS}
 # .  .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .
 cat <<UPSTARTSCRVARS> ${OERPUSR_WORK}/${SCRIPTFILEVARS}
+#!/bin/bash
+#
 # Variables required by Upstart script and for remounting site in a new machine
 #
 export SITE_USER=${OERPUSR}
@@ -55,6 +62,15 @@ export ODOO_HOME=\${ODOO_BASE}/server
 #
 #  Not needed here but required when moving this site to a new machine.
 export PSQL_USER=${PSQLUSR}
+#
+# Define the identifiers OpenERP will use to connect to postgres
+export PSQLUSRPWD="${PSQLUSRPWD}"
+export PSQLUSR="${PSQLUSR}"
+export PSQLUSR_HOME="${PSQLUSR_HOME}"
+#
+# Define the initial database for OpenERP
+export PSQLUSRTBSP="${PSQLUSRTBSP}"
+export PSQLUSRDB="${PSQLUSRDB}"
 #
 declare -A GROUP_IDS=(
 [$(getent passwd ${POSTGRESUSR} | cut -f 4 -d:)]=${POSTGRESUSR}

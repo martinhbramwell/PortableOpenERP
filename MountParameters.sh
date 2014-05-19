@@ -6,6 +6,9 @@ export PARTIAL_BUILD=""  #  Non-blank means yes
 # System device on which to install site  ** NOTHING WILL REMAIN OF ANY PRIOR CONTENT **
 export HOMEDEVICE="" # eg, "/dev/vdb"
 #
+# Specify OpenERP XMLRPC port #
+export ACCESS_PORT=8029
+#
 #  System introspection flags. Written by volume creation process and exacted by mounting process.
 export LBL_OPENERP="OpenERP"
 export LBL_POSTGRES="PostgreSQL"
@@ -16,6 +19,6 @@ export POSTGRESUSR="postgres"
 export OPENERPUSR="openerp"
 #
 # The hypervisor label used for this device, if such is required.
-export DEVICELABEL="TempSourceDrv" # eg, "Volume 4775"
+export DEVICELABEL="" # eg, "Volume 4775"
 #
 

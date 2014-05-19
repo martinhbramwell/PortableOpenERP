@@ -1,11 +1,10 @@
 #!/bin/bash
 #
-if [[ -z ${SITENAME} || -z ${ACCESS_PORT} ]]
+if [[ -z ${ACCESS_PORT} ]]
 then
 #
 echo "Usage :  ./ipoerpMakeUpStartScript.sh  "
 echo "With required variables :"
-echo " -     SITENAME : ${SITENAME}"
 echo " -  ACCESS_PORT : ${ACCESS_PORT}"
 exit 0
 #

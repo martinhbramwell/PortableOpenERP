@@ -28,6 +28,9 @@ local   ${PSQLUSRDB}            ${PSQLUSR}                             peer
 EOF
 fi
 #
+echo " * * * FIXME :  NEED TO RECREATE TABLESPACE AND PLACE OUR DATABASE INTO IT"
+exit
+#
 cd ~
 #
 [[ $(psql ${PSQLUSR} -c "" >/dev/null 2>&1 ; echo $?) -gt 0 ]] && \

@@ -135,24 +135,20 @@ EOFSTAB
 mount -a
 #
 source ${OERPUSR_WORK}/UpStartVars.sh
-if [[  0 -eq 1  ]]
-then
-  #
-  echo "Correcting file and directory ownership"
-  for grp in "${!GROUP_IDS[@]}"
-  do
-    echo "GID: ${grp}; Group: ${GROUP_IDS[${grp}]};"
-    find ${SITEBASE} -gid ${grp}  -exec chgrp ${GROUP_IDS[${grp}]} {} \;
-  done
-  #
-  #
-  for usr in "${!USERS_IDS[@]}"
-  do
-    echo "UID: ${usr}; User: ${USERS_IDS[${usr}]};"
-    find ${SITEBASE} -uid ${usr}  -exec chown ${USERS_IDS[${usr}]} {} \;
-  done
- #
-fi
+#
+echo "Correcting file and directory ownership"
+for grp in "${!GROUP_IDS[@]}"
+do
+  echo "GID: ${grp}; Group: ${GROUP_IDS[${grp}]};"
+  find ${SITEBASE} -gid ${grp}  -exec chgrp ${GROUP_IDS[${grp}]} {} \;
+done
+#
+#
+for usr in "${!USERS_IDS[@]}"
+do
+  echo "UID: ${usr}; User: ${USERS_IDS[${usr}]};"
+  find ${SITEBASE} -uid ${usr}  -exec chown ${USERS_IDS[${usr}]} {} \;
+done
 #
 echo "Remounted /etc/fstab"
 #
