@@ -21,7 +21,7 @@ echo " - DEVICELABEL : ${DEVICELABEL}"
 # echo " -  : ${}"
 else
 #
-export SITENAME=""
+export SITE_NAME=""
 #
 echo "Validating newly attached OpenERP site volume"
 export LIM=$(ls -l ${HOMEDEVICE}* | grep -c ${HOMEDEVICE})
@@ -57,36 +57,33 @@ then
  umount /tmp/odoo/ > /dev/null 2>&1 || :
  exit
 else
- echo "OpenERP configuration detected"
- export UPSTARTR=$(cat /tmp/odoo/UpStartVars.sh | sed -n -e "s/^export UPSTART_JOB=//p")
- export SITENAME=$(cat /tmp/odoo/UpStartVars.sh | sed -n -e "s/^export SITE_NAME=//p")
- export USERNAME=$(cat /tmp/odoo/UpStartVars.sh | sed -n -e "s/^export SITE_USER=//p")
- export PUSRNAME=$(cat /tmp/odoo/UpStartVars.sh | sed -n -e "s/^export PSQL_USER=//p")
- if [[ -z ${UPSTARTR} || -z ${SITENAME} || -z ${USERNAME} || -z ${PUSRNAME} ]]
+ echo "OpenERP configuration detected.  Loading it's variables"
+ source /tmp/odoo//UpStartVars.sh
+ if [[ -z ${UPSTART_JOB} || -z ${SITE_NAME} || -z ${SITE_USER} || -z ${PSQL_USER} ]]
  then
   echo "Missing one or both of :"
-  echo " - UPSTARTR : ${UPSTARTR}"
-  echo " - SITENAME : ${SITENAME}"
-  echo " - USERNAME : ${USERNAME}"
-  echo " - PUSRNAME : ${PUSRNAME}"
+  echo " - UPSTART_JOB : ${UPSTART_JOB}"
+  echo " - SITE_NAME : ${SITE_NAME}"
+  echo " - SITE_USER : ${SITE_USER}"
+  echo " - PSQL_USER : ${PSQL_USER}"
   umount /tmp/odoo/ > /dev/null 2>&1 || :
   exit
  else
-  export SITEBASE="/srv/${SITENAME}"
+  export SITEBASE="/srv/${SITE_NAME}"
   export OERPUSR_WORK="${SITEBASE}/${OPENERPUSR}"
   export OERPUSR_HOME="${OERPUSR_WORK}/home"
   export PSQLUSR_HOME="${SITEBASE}/${POSTGRESUSR}"
-  echo "OpenERP site \"${SITENAME}\" will now be mounted for users \"${USERNAME}\" and \"${PUSRNAME}\".  Upstart job name : \"${UPSTARTR}\"."
+  echo "OpenERP site \"${SITE_NAME}\" will now be mounted for users \"${SITE_USER}\" and \"${PSQL_USER}\".  Upstart job name : \"${UPSTART_JOB}\"."
   echo "Mount points \"${OERPUSR_WORK}\" and \"${PSQLUSR_HOME}\" ."
   #
   mkdir -p ${OERPUSR_WORK}
   mkdir -p ${PSQLUSR_HOME}
   #
-  if [[  1 -gt $(getent passwd ${PUSRNAME} | grep -c "^${PUSRNAME}")  ]]
+  if [[  1 -gt $(getent passwd ${PSQL_USER} | grep -c "^${PSQL_USER}")  ]]
   then
-   echo "Creating user \"${PUSRNAME}\""
-   useradd -d ${PSQLUSR_HOME} ${PUSRNAME}
-   usermod -a -G ${POSTGRESUSR} ${PUSRNAME}
+   echo "Creating user \"${PSQL_USER}\""
+   useradd -d ${PSQLUSR_HOME} ${PSQL_USER}
+   usermod -a -G ${POSTGRESUSR} ${PSQL_USER}
   fi
   #
   mkdir -p /opt/${OPENERPUSR}
@@ -96,11 +93,11 @@ else
    useradd -d /opt/${OPENERPUSR} ${OPENERPUSR}
   fi
   #
-  if [[  1 -gt $(getent passwd ${USERNAME} | grep -c "^${USERNAME}")  ]]
+  if [[  1 -gt $(getent passwd ${SITE_USER} | grep -c "^${SITE_USER}")  ]]
   then
-   echo "Creating user \"${USERNAME}\" "
-   useradd -d ${OERPUSR_HOME} ${USERNAME}
-   usermod -a -G ${OPENERPUSR} ${USERNAME}
+   echo "Creating user \"${SITE_USER}\" "
+   useradd -d ${OERPUSR_HOME} ${SITE_USER}
+   usermod -a -G ${OPENERPUSR} ${SITE_USER}
   fi
   #
  fi
@@ -126,46 +123,16 @@ echo "============================================"
 #
 cat <<EOFSTAB>> /etc/fstab
 #
-# Server Site :: ${SITENAME}  -- Hypervisor Volume Name <[ ${DEVICELABEL} ]>
-# - Filesystem for OpenERP : ${SITENAME}
+# Server Site :: ${SITE_NAME}  -- Hypervisor Volume Name <[ ${DEVICELABEL} ]>
+# - Filesystem for OpenERP : ${SITE_NAME}
 UUID=$(blkid -s UUID -o value ${HOMEDEVICE}${DEV_OPENERP}) ${OERPUSR_WORK}  ext4 defaults 0 2
-# - Filesystem for PostgreSQL : ${SITENAME}
+# - Filesystem for PostgreSQL : ${SITE_NAME}
 UUID=$(blkid -s UUID -o value ${HOMEDEVICE}${DEV_POSTGRES}) ${PSQLUSR_HOME} ext4 defaults 0 2
 #
 EOFSTAB
 #
 # tail -n 15 /etc/fstab
 mount -a
-#
-#  THIS IS PROBABLY PURE CRAP AND WILL ALMOST CERTAINLY BE DELETED
-if [[  0 -eq 1  ]]
-then
- touch ${OERPUSR_HOME}/.bzr.log
- chown       ${OPENERPUSR}:${USERNAME} ${OERPUSR_HOME}
- chmod -R 770 ${PSQLUSR_HOME}
- chmod -R 770 ${OERPUSR_HOME}
- find ${PSQLUSR_HOME} -type d -print0 | xargs -0 chmod 750
- find ${PSQLUSR_HOME} -type f -print0 | xargs -0 chmod 640
- find ${OERPUSR_HOME} -type d -print0 | xargs -0 chmod 750
- find ${OERPUSR_HOME} -type f -print0 | xargs -0 chmod 640
- #
- chown -R    ${OPENERPUSR}:${USERNAME}  ${OERPUSR_HOME}/source
- chmod -R    750                  ${OERPUSR_HOME}/source
- chown       ${OPENERPUSR}:${USERNAME}  ${OERPUSR_HOME}/.bzr.log
- chmod -R    640                  ${OERPUSR_HOME}/.bzr.log
- #
- chown       ${OPENERPUSR}:${USERNAME}  ${OERPUSR_HOME}/openerp-server.conf
- chmod       550                  ${OERPUSR_HOME}/openerp-server.conf
- echo "chown -R ${USERNAME}:${USERNAME} ${OERPUSR_HOME}/server"
- chown -R ${USERNAME}:${USERNAME} ${OERPUSR_HOME}/server
- chmod       770                  ${OERPUSR_HOME}/server/openerp-server
- chown -R ${USERNAME}:${USERNAME} ${OERPUSR_HOME}/log
- chown -R ${USERNAME}:${USERNAME} ${OERPUSR_HOME}/.local
- #
- chown       ${OPENERPUSR}:${USERNAME}  ${OERPUSR_HOME}/upstart.sh
- chmod -R    550                  ${OERPUSR_HOME}/upstart.sh
- #
-fi
 #
 source ${OERPUSR_WORK}/UpStartVars.sh
 if [[  0 -eq 1  ]]

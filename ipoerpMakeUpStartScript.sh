@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-if [[ -z ${SITENAME} || -z ${POSTGRESUSR} || -z ${OPENERPUSR} || -z ${PSQLUSR} || -z ${OERPUSR} || -z ${ACCESS_PORT} || -z ${OERPUSR_WORK} ]]
+if [[ -z ${SITENAME} || -z ${POSTGRESUSR} || -z ${OPENERPUSR} || -z ${PSQLUSR} || -z ${OERPUSR} || -z ${OERPUSR_WORK} ]]
 then
 #
 echo "Usage :  ./ipoerpMakeUpStartScript.sh  "
@@ -10,7 +10,6 @@ echo " - POSTGRESUSR  : ${POSTGRESUSR}"
 echo " -  OPENERPUSR  : ${OPENERPUSR}"
 echo " -      OERPUSR : ${OERPUSR}"
 echo " -      PSQLUSR : ${PSQLUSR}"
-echo " -  ACCESS_PORT : ${ACCESS_PORT}"
 echo " - OERPUSR_WORK : ${OERPUSR_WORK}"
 exit 0
 #
@@ -94,35 +93,3 @@ env EXEC_PATH="${OERPUSR_WORK}/${SCRIPTFILE}"
 exec su -s /bin/bash -c \${EXEC_PATH}
 UPSTART
 # :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :
-#
-echo "Creating /etc/default/iptables.patch"
-rm -f /etc/default/iptables.patch
-# .  .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .
-cat <<PATCHEOF> /etc/default/iptables.patch
---- /etc/default/iptables       2014-05-09 13:29:26.779041999 -0400
-+++ /etc/default/iX     2014-05-09 13:09:42.635041999 -0400
-@@ -35,6 +35,9 @@
- # Loop device.
- -A INPUT -i lo -j ACCEPT
-
-+# OpenERP XMLRPC
-+-A INPUT -p tcp -m tcp --dport ${ACCESS_PORT} -j ACCEPT
-+
- # http, https
- -A INPUT -p tcp --dport 80 -j ACCEPT
- -A INPUT -p tcp --dport 443 -j ACCEPT
-
-PATCHEOF
-# :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :
-#
-patch -u /etc/default/iptables /etc/default/iptables.patch
-rm -f /etc/default/iptables.patch
-#
-cat /etc/default/iptables
-#
-echo "Trying upstart : ${SCRIPTNAME}"
-stop ${SCRIPTNAME}
-start ${SCRIPTNAME}
-#
-service iptables restart
-ifdown eth0 && ifup eth0
