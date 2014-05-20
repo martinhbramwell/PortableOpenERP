@@ -22,9 +22,6 @@ export OERPUSR="oerp_${SITEUSER}"
 export OERPUSR_WORK="/srv/${SITENAME}/openerp"
 export OERPUSR_HOME="${OERPUSR_WORK}/home"
 #
-# Specify OpenERP XMLRPC port #
-export ACCESS_PORT=8029
-#
 # Installers directory
 export INSTALLERS=~/installers
 #

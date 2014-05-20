@@ -67,6 +67,7 @@ then
  source $DEFDIR/ipoerpPatchIPTables.sh
  #
  echo "Finished! A reboot is not required, but might be a good idea."
+ echo "The first time a page is accessed, some files are not found.  A refresh is required, one time only, to get them."
  echo "Visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
  echo "Login  : admin:${PSQLUSRPWD}"
  #
