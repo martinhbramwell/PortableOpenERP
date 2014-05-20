@@ -3,7 +3,7 @@
 if [[  -z ${SITENAME} || -z ${PSQLUSR} || -z ${PSQLUSRPWD}  || -z ${PSQLUSRTBSP}  || -z ${PSQLUSRDB}  || -z ${PSQLUSR_HOME}  ]]
 then
 #
-echo "Usage :  ./ipoerpPreparePgUserAndTablespace.sh"
+echo "Usage :  ./ipoerpRecreatePgUserAndTablespace.sh"
 echo "With required variables :"
 echo " -     SITENAME : ${SITENAME}"
 echo " -   PSQLUSRPWD : ${PSQLUSRPWD}"

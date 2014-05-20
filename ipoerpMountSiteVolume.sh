@@ -58,7 +58,7 @@ then
  exit
 else
  echo "OpenERP configuration detected.  Loading it's variables"
- source /tmp/odoo//UpStartVars.sh
+ source /tmp/odoo/UpStartVars.sh
  if [[ -z ${UPSTART_JOB} || -z ${SITE_NAME} || -z ${SITE_USER} || -z ${PSQL_USER} ]]
  then
   echo "Missing one or both of :"
@@ -106,22 +106,17 @@ fi
 #
 umount /tmp/odoo/ > /dev/null 2>&1 || :
 #
+export FIRST_PASS="yes"
 if [[ -z $(grep "${FLAGTAG}" /etc/fstab)   ]]
 then
     echo "Prepare /etc/fstab for patching"
     echo "==============================="
     echo "##### ${FLAGTAG} #####" >> /etc/fstab
-else
-    echo "Detected previous patching of \"/etc/fstab\". "
-    echo " * * DEVICE MOUNTING CANNOT PROCEED * * "
-    echo "    Delete the line:  ##### ${FLAGTAG} ##### , from \"/etc/fstab\"and try again."
-    exit 1
-fi
-#
-echo "Append new volume descriptions to /etc/fstab"
-echo "============================================"
-#
-cat <<EOFSTAB>> /etc/fstab
+    #
+    echo "Append new volume descriptions to /etc/fstab"
+    echo "============================================"
+    #
+    cat <<EOFSTAB>> /etc/fstab
 #
 # Server Site :: ${SITE_NAME}  -- Hypervisor Volume Name <[ ${DEVICELABEL} ]>
 # - Filesystem for OpenERP : ${SITE_NAME}
@@ -130,42 +125,47 @@ UUID=$(blkid -s UUID -o value ${HOMEDEVICE}${DEV_OPENERP}) ${OERPUSR_WORK}  ext4
 UUID=$(blkid -s UUID -o value ${HOMEDEVICE}${DEV_POSTGRES}) ${PSQLUSR_HOME} ext4 defaults 0 2
 #
 EOFSTAB
+    #
+    #
+else
+    if [[  $(cat fstab | grep site_mtt | grep -c PorpDrive) -lt "1" ]]
+    then
+        echo "Detected previous patching of \"/etc/fstab\". "
+        echo " * * DEVICE MOUNTING CANNOT PROCEED * * "
+        echo "    Delete the line:  ##### ${FLAGTAG} ##### , from \"/etc/fstab\"and try again."
+        exit 1
+    else
+        echo "\"/etc/fstab\" was pateched previously with \"# Server Site :: ${SITE_NAME}  -- Hypervisor Volume Name <[ ${DEVICELABEL} ]>\". "
+        echo " * * Assuming its correct.  Continuing . . . * * "
+        export FIRST_PASS="no"
+    fi
+fi
 #
 # tail -n 15 /etc/fstab
 mount -a
 #
 source ${OERPUSR_WORK}/UpStartVars.sh
 #
-echo "Correcting file and directory ownership"
-for grp in "${!GROUP_IDS[@]}"
-do
-  echo "GID: ${grp}; Group: ${GROUP_IDS[${grp}]};"
-  find ${SITEBASE} -gid ${grp}  -exec chgrp ${GROUP_IDS[${grp}]} {} \;
-done
-#
-#
-for usr in "${!USERS_IDS[@]}"
-do
-  echo "UID: ${usr}; User: ${USERS_IDS[${usr}]};"
-  find ${SITEBASE} -uid ${usr}  -exec chown ${USERS_IDS[${usr}]} {} \;
-done
+if [[ "${FIRST_PASS}" -eq "yes" ]]
+then
+    echo "Correcting file and directory ownership"
+    for grp in "${!GROUP_IDS[@]}"
+    do
+      echo "GID: ${grp}; Group: ${GROUP_IDS[${grp}]};"
+      find ${SITEBASE} -gid ${grp}  -exec chgrp ${GROUP_IDS[${grp}]} {} \;
+    done
+    #
+    #
+    for usr in "${!USERS_IDS[@]}"
+    do
+      echo "UID: ${usr}; User: ${USERS_IDS[${usr}]};"
+      find ${SITEBASE} -uid ${usr}  -exec chown ${USERS_IDS[${usr}]} {} \;
+    done
+else
+    echo "Assuming ownership issues were resolved on previous pass."
+fi
 #
 echo "Remounted /etc/fstab"
-#
-echo "Creating /etc/init/${UPSTART_JOB}.conf  that calls  ${OERPUSR_WORK}/UpStart.sh"
-rm -f /etc/init/${UPSTART_JOB}.conf
-# .  .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .
-cat <<UPSTART> /etc/init/${UPSTART_JOB}.conf
-respawn
-respawn limit 1 5
-
-start on runlevel [2345]
-stop on runlevel [!2345]
-
-env EXEC_PATH="${OERPUSR_WORK}/UpStart.sh"
-
-exec su -s /bin/bash -c \${EXEC_PATH}
-UPSTART
 #
 start ${UPSTART_JOB}
 #

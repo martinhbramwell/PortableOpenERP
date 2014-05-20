@@ -60,10 +60,13 @@ then
  echo "K) Patch OpenERP Launcher"
  su ${OERPUSR} -c "source $DEFDIR/ipoerpPatchOpenErpLauncher.sh"
  #
- echo "L) Make the UPStart script"
+ echo "L) Make the UpStart script"
  source $DEFDIR/ipoerpMakeUpStartScript.sh
  #
- echo "M) Patch IPTables and refresh firewall."
+ echo "M) Make the UpStart \"conf\" file."
+ source $DEFDIR/ipoerpMakeUpstartConf.sh
+ #
+ echo "N) Patch IPTables and refresh firewall."
  source $DEFDIR/ipoerpPatchIPTables.sh
  #
  echo "Finished! A reboot is not required, but might be a good idea."

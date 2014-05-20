@@ -22,9 +22,6 @@ then
  echo "C) Install all of iRedMail"
  source $DEFDIR/iredmailInstallAll.sh
  #
- #
- echo "D) Install new volume"
- source $DEFDIR/ipoerpMountSiteVolume.sh
 #
 #
 echo "Finished! A reboot is not required, but might be a good idea."
@@ -35,10 +32,17 @@ else
 #
  echo "Starting partial execution!"
  #
+ echo "D) Install new volume"
+ source $DEFDIR/ipoerpMountSiteVolume.sh
+ #
  echo "E) Prepare PostgreSQL User and Tablespace"
  su postgres -c "source $DEFDIR/ipoerpRecreatePgUserAndTablespace.sh"
-exit #
- echo "F) Patch IPTables"
+ exit
+ #
+ echo "F) Make Upstart \"conf\" file"
+ source $DEFDIR/ipoerpMakeUpstartConf.sh
+ #
+ echo "G) Patch IPTables"
  source $DEFDIR/ipoerpPatchIPTables.sh
  #
  echo "Partial run ended!"

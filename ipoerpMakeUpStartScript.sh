@@ -92,20 +92,3 @@ echo "Fixing permissions on ${OERPUSR_WORK}/${SCRIPTFILE} and ${OERPUSR_WORK}/${
 chmod 755 ${OERPUSR_WORK}/${SCRIPTFILE}
 chmod 755 ${OERPUSR_WORK}/${SCRIPTFILEVARS}
 #
-#
-#
-echo "Creating /etc/init/${SCRIPTNAME}.conf"
-rm -f /etc/init/${SCRIPTNAME}.conf
-# .  .   .   .   .   .   .   .   .   .   .   .   .   .   .   .   .
-cat <<UPSTART> /etc/init/${SCRIPTNAME}.conf
-respawn
-respawn limit 1 5
-
-start on runlevel [2345]
-stop on runlevel [!2345]
-
-env EXEC_PATH="${OERPUSR_WORK}/${SCRIPTFILE}"
-
-exec su -s /bin/bash -c \${EXEC_PATH}
-UPSTART
-# :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :

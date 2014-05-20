@@ -22,6 +22,9 @@ export OERPUSR="oerp_${SITEUSER}"
 export OERPUSR_WORK="/srv/${SITENAME}/openerp"
 export OERPUSR_HOME="${OERPUSR_WORK}/home"
 #
+# Define Upstart Job Name
+export UPSTART_JOB="odoo_${SITENAME}"
+#
 # Installers directory
 export INSTALLERS=~/installers
 #
