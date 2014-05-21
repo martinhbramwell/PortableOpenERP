@@ -1,29 +1,49 @@
 #!/bin/bash
 #
-apt-get install aptitude
+aptProcess() {
+    echo "Performing dependency collection"
+    #
+    #
+    apt-get install aptitude
+    #
+    add-apt-repository -y ppa:ubuntu-clamav/ppa
+    #
+    apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y clean && apt-get -y autoremove
+    #
+    aptitude -y install python ghostscript graphviz libfreetype6-dev python-pdftools tree \
+        libldap2-dev libjpeg-dev libsasl2-dev libpq-dev libxml2 git curl \
+        libxslt1-dev libxml2-dev lptools poppler-utils python-pip expect
+    #
+    aptitude -y install postgresql-client python-dateutil bzr gcc make mc python-dev wget \
+        python-imaging python-pychart python-libxslt1 python-matplotlib xfsprogs \
+        antiword python-reportlab-accel python-zsi zlib1g-dev zip libffi-dev
+    #
+    mkdir -p ~/tmpxxxxxtmp
+    pushd ~/tmpxxxxxtmp
+        #
+        curl -O http://python-distribute.org/distribute_setup.py
+        python distribute_setup.py
+        easy_install pip
+        #
+        pip install virtualenv
+        pip install virtualenvwrapper
+        #
+    popd
+    rm -fr ~/tmpxxxxxtmp
+    touch lastApt
+}
 #
-sudo add-apt-repository -y ppa:ubuntu-clamav/ppa
-#
-sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y dist-upgrade && sudo apt-get -y clean && sudo apt-get -y autoremove
-#
-aptitude -y install python ghostscript graphviz libfreetype6-dev python-pdftools tree
-aptitude -y install libldap2-dev libjpeg-dev libsasl2-dev libpq-dev libxml2 git curl
-aptitude -y install libxslt1-dev libxml2-dev lptools poppler-utils python-pip expect
-aptitude -y install postgresql-client python-dateutil bzr gcc make mc python-dev wget
-aptitude -y install python-imaging python-pychart python-libxslt1 python-matplotlib xfsprogs
-aptitude -y install antiword python-reportlab-accel python-zsi zlib1g-dev zip libffi-dev
-#
-mkdir -p ~/tmpxxxxxtmp
-pushd ~/tmpxxxxxtmp
-#
-curl -O http://python-distribute.org/distribute_setup.py
-python distribute_setup.py
-easy_install pip
-#
-pip install virtualenv
-pip install virtualenvwrapper
-#
-popd
-rm -fr ~/tmpxxxxxtmp
-
+if [[ -f lastApt ]]
+then
+    if [[ $(find "lastApt" -mmin +721) ]]
+    then
+        echo "Dependencies are stale."
+        aptProcess
+    else
+        echo "Dependency collection completed already today."
+    fi
+else
+    echo "Required dependencies not detected."
+    aptProcess
+fi
 
