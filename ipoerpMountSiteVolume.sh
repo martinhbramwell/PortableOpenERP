@@ -24,6 +24,7 @@ else
 export SITE_NAME=""
 #
 echo "Validating newly attached OpenERP site volume"
+echo "---------------------------------------------"
 export LIM=$(ls -l ${HOMEDEVICE}* | grep -c ${HOMEDEVICE})
 export FOUND=1
 #
@@ -74,7 +75,7 @@ else
   export OERPUSR_HOME="${OERPUSR_WORK}/home"
   export PSQLUSR_HOME="${SITEBASE}/${POSTGRESUSR}"
   echo "OpenERP site \"${SITE_NAME}\" will now be mounted for users \"${SITE_USER}\" and \"${PSQL_USER}\".  Upstart job name : \"${UPSTART_JOB}\"."
-  echo "Mount points \"${OERPUSR_WORK}\" and \"${PSQLUSR_HOME}\" ."
+  echo "  Mount points will be \"${OERPUSR_WORK}\" and \"${PSQLUSR_HOME}\" ."
   #
   mkdir -p ${OERPUSR_WORK}
   mkdir -p ${PSQLUSR_HOME}
@@ -84,6 +85,8 @@ else
    echo "Creating user \"${PSQL_USER}\""
    useradd -d ${PSQLUSR_HOME} ${PSQL_USER}
    usermod -a -G ${POSTGRESUSR} ${PSQL_USER}
+  else
+   echo "User \"${PSQL_USER}\" exists."
   fi
   #
   mkdir -p /opt/${OPENERPUSR}
@@ -91,6 +94,8 @@ else
   then
    echo "Creating user \"${OPENERPUSR}\""
    useradd -d /opt/${OPENERPUSR} ${OPENERPUSR}
+  else
+   echo "User \"${OPENERPUSR}\" exists."
   fi
   #
   if [[  1 -gt $(getent passwd ${SITE_USER} | grep -c "^${SITE_USER}")  ]]
@@ -98,6 +103,8 @@ else
    echo "Creating user \"${SITE_USER}\" "
    useradd -d ${OERPUSR_HOME} ${SITE_USER}
    usermod -a -G ${OPENERPUSR} ${SITE_USER}
+  else
+   echo "User \"${SITE_USER}\" exists."
   fi
   #
  fi
@@ -128,25 +135,27 @@ EOFSTAB
     #
     #
 else
-    if [[  $(cat fstab | grep site_mtt | grep -c PorpDrive) -lt "1" ]]
+    if [[  $(cat /etc/fstab | grep ${SITE_NAME} | grep -c ${DEVICELABEL}) -lt "1" ]]
     then
         echo "Detected previous patching of \"/etc/fstab\". "
         echo " * * DEVICE MOUNTING CANNOT PROCEED * * "
         echo "    Delete the line:  ##### ${FLAGTAG} ##### , from \"/etc/fstab\"and try again."
         exit 1
     else
-        echo "\"/etc/fstab\" was pateched previously with \"# Server Site :: ${SITE_NAME}  -- Hypervisor Volume Name <[ ${DEVICELABEL} ]>\". "
-        echo " * * Assuming its correct.  Continuing . . . * * "
+        echo "\"/etc/fstab\" was patched previously with \"# Server Site :: ${SITE_NAME}  -- Hypervisor Volume Name <[ ${DEVICELABEL} ]>\". "
+        echo " * * Assuming it's correct.  Continuing . . . * * "
         export FIRST_PASS="no"
     fi
 fi
 #
-# tail -n 15 /etc/fstab
+echo "Reloading /etc/fstab."
+echo "====================="
 mount -a
 #
 source ${OERPUSR_WORK}/UpStartVars.sh
 #
-if [[ "${FIRST_PASS}" -eq "yes" ]]
+echo "First pass?  ${FIRST_PASS}"
+if [[ "${FIRST_PASS}" == "yes" ]]
 then
     echo "Correcting file and directory ownership"
     for grp in "${!GROUP_IDS[@]}"
@@ -166,8 +175,6 @@ else
 fi
 #
 echo "Remounted /etc/fstab"
-#
-start ${UPSTART_JOB}
 #
 fi
 #
