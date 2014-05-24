@@ -17,8 +17,8 @@ then
  #
  VENV_PATH=${OERPUSR_WORK}/server
  whoami
- ls -la ${VENV_PATH}
- ls -la ${VENV_PATH}/..
+# ls -la ${VENV_PATH}
+# ls -la ${VENV_PATH}/..
  cd ${VENV_PATH}
  pwd
  if [[  -d  "${VENV_PATH}/venv/bin" ]]
@@ -28,6 +28,7 @@ then
   virtualenv venv --system-site-packages
   echo "Put venv in ${VENV_PATH}"
  fi
+exit
  #
  export VIRTUAL_ENV="${VENV_PATH}/venv";
  source ${VIRTUAL_ENV}/bin/activate

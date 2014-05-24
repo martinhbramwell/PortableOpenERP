@@ -16,27 +16,29 @@ cd ${OERPUSR_WORK}
 echo "Preparing Openerp \"server\" directory"
 whoami
 pwd
-ls -la server
-ls -la server/venv
-cp -R source/openobject-server/* server
+# ls -la server
+# ls -la server/venv
+cp --recursive --update source/openobject-server/* server
 #
 pushd server
 echo "Preparing Openerp \"server/addons\" directory"
-cp -R ../source/openobject-addons openerp/tmpX
-mv openerp/addons/* openerp/tmpX
-rm -fr openerp/addons
-mv openerp/tmpX openerp/addons
+mkdir -p openerp/addons
+cp --recursive --update ../source/openobject-addons/* openerp/addons
+#
+# mv openerp/addons/* openerp/tmpX
+# rm -fr openerp/addons
+# mv openerp/tmpX openerp/addons
 echo "Preparing Openerp \"server/addons/web\" directory"
-cp -R ../source/openerp-web/addons/* openerp/addons/
+cp --recursive --update ../source/openerp-web/addons/* openerp/addons/
 #
 popd
 echo "Stepped out to $(pwd)"
 echo "Setting permissions"
-ls -la .
+# ls -la .
 whoami
 chown -R openerp:${OERPUSR} server
 chmod -R g+w server
-ls -l server
+# ls -l server
 #
 
 
