@@ -28,7 +28,6 @@ then
   virtualenv venv --system-site-packages
   echo "Put venv in ${VENV_PATH}"
  fi
-exit
  #
  export VIRTUAL_ENV="${VENV_PATH}/venv";
  source ${VIRTUAL_ENV}/bin/activate
