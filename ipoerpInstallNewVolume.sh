@@ -14,7 +14,8 @@ else
     echo "Error while trying to prepare ${HOMEDEVICE}"
     exit
  fi
- if [[ -z ${SITENAME}}  || -z ${DEVICELABEL}  || -z ${LBL_OPENERP}  || -z ${LBL_POSTGRES}  || -z ${FLAGTAG}  ]]
+ #
+ if [[ -z ${SITENAME}}  || -z ${DEVICELABEL}  || -z ${LBL_OPENERP}  || -z ${LBL_POSTGRES}  || -z ${FLAGTAG}  ||  -z ${POSTGRESUSR}  ||  -z ${OPENERPUSR} ]]
  then
   #
   echo "Usage :  ./ipoerpInstallNewVolume.sh  "
@@ -24,9 +25,16 @@ else
   echo " - LBL_OPENERP : ${LBL_OPENERP}"
   echo " - LBL_POSTGRES : ${LBL_POSTGRES}"
   echo " - FLAGTAG : ${FLAGTAG}"
+  echo " - POSTGRESUSR : ${POSTGRESUSR}"
+  echo " - OPENERPUSR : ${OPENERPUSR}"
   # echo " -  : ${}"
   #
- else
+ elif  [[  4 -lt  $(cat /etc/fstab | grep -c site_mtt)  ]]
+ then
+  #
+  echo "Found a previous installation.  Skipping volume installation step."
+  #
+ else 
   #
   echo "Wiping volume '${HOMEDEVICE}' **TOTALLY** without further confirmation from you."
   echo "Make a gpt volume"
@@ -72,8 +80,8 @@ else
   #
   echo "Prepare places in the root file system"
   echo "======================================="
-  mkdir -p /srv/$SITENAME/openerp
-  mkdir -p /srv/$SITENAME/postgres
+  mkdir -p /srv/$SITENAME/${OPENERPUSR}
+  mkdir -p /srv/$SITENAME/${POSTGRESUSR}
   #
   tree -L 2 /srv/$SITENAME
   #
@@ -96,19 +104,19 @@ cat <<EOFSTAB>> /etc/fstab
 #
 # Server Site :: ${SITENAME}  -- Hypervisor Volume Name <[ ${DEVICELABEL} ]>
 # - Filesystem for OpenERP : ${SITENAME}
-UUID=$(blkid -s UUID -o value ${HOMEDEVICE}1) /srv/${SITENAME}/openerp  ext4 defaults 0 2
+UUID=$(blkid -s UUID -o value ${HOMEDEVICE}1) /srv/${SITENAME}/${OPENERPUSR}  ext4 defaults 0 2
 # - Filesystem for PostgreSQL : ${SITENAME}
-UUID=$(blkid -s UUID -o value ${HOMEDEVICE}2) /srv/${SITENAME}/postgres ext4 defaults 0 2
+UUID=$(blkid -s UUID -o value ${HOMEDEVICE}2) /srv/${SITENAME}/${POSTGRESUSR} ext4 defaults 0 2
 #
 EOFSTAB
   #
-  echo "Reprocess /etc/fstab"
-  echo "===================="
-  mount -a
-  #
-  tree -L 2 /srv/$SITENAME
-  #
  fi
+ #
+ echo "Reprocess /etc/fstab"
+ echo "===================="
+ mount -a
+ #
+ tree -L 2 /srv/$SITENAME
  #
 fi
 #
