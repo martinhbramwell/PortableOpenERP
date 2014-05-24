@@ -4,7 +4,7 @@
 export PARTIAL_BUILD=""  #  Non-blank means yes
 #
 # System device on which to install site  ** NOTHING WILL REMAIN OF ANY PRIOR CONTENT **
-export HOMEDEVICE="" # eg, "/dev/vdb"
+export HOMEDEVICE="" # eg, "/dev/sdb"
 #
 # Specify OpenERP XMLRPC port #
 export ACCESS_PORT=8029

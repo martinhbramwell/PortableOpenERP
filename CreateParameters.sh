@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 # Define the name of the OpenERP site
-export SITENAME="site_y"
-export SITEUSER="user_y"
+export SITENAME=""
+export SITEUSER=""
 #
 # Define the host name and domain to be used for this machine
 export NEWHOSTNAME=""
@@ -11,7 +11,7 @@ export NEWHOSTDOMAIN=""
 # Define the identifiers OpenERP will use to connect to postgres
 export PSQLUSRPWD=""
 export PSQLUSR="psql_${SITEUSER}"
-export PSQLUSR_HOME="/srv/${SITENAME}/postgres"
+export PSQLUSR_HOME="/srv/${SITENAME}/${POSTGRESUSR}"
 #
 # Define the initial database for OpenERP
 export PSQLUSRTBSP="${SITENAME}"
@@ -19,7 +19,7 @@ export PSQLUSRDB="${SITENAME}_db"
 #
 # Define the identifiers OpenERP will use within the OS
 export OERPUSR="oerp_${SITEUSER}"
-export OERPUSR_WORK="/srv/${SITENAME}/openerp"
+export OERPUSR_WORK="/srv/${SITENAME}/${OPENERPUSR}"
 export OERPUSR_HOME="${OERPUSR_WORK}/home"
 #
 # Define Upstart Job Name
