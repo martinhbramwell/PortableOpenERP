@@ -15,7 +15,7 @@ exit 0
 #
 fi
 #
-echo "Preparing access for : ${PSQLUSR}"
+echo "Preparing access for : ${PSQLUSR} (pwd : '${PSQLUSRPWD}')"
 #
 if [[  6 -gt $(grep -o "${PSQLUSR}" /etc/postgresql/9.3/main/pg_hba.conf | wc -l) ]]
 then
@@ -28,10 +28,10 @@ local   ${PSQLUSRDB}            ${PSQLUSR}                             peer
 EOF
 fi
 #
-echo " * * * FIXME :  NEED TO RECREATE TABLESPACE AND PLACE OUR DATABASE INTO IT"
-exit
 #
 cd ~
+declare TEMPDIR=${PSQLUSR_HOME}/temp
+mkdir -p ${TEMPDIR}
 #
 [[ $(psql ${PSQLUSR} -c "" >/dev/null 2>&1 ; echo $?) -gt 0 ]] && \
      psql -c "CREATE DATABASE ${PSQLUSR};"
@@ -40,10 +40,19 @@ cd ~
 #
 if [[ -z $(psql -qtc "SELECT oid FROM pg_catalog.pg_tablespace WHERE spcname='${PSQLUSRTBSP}';" | tr -d ' ') ]]
 then
-    psql -c "CREATE TABLESPACE ${PSQLUSRTBSP} LOCATION '${PSQLUSR_HOME}/data';"
+    psql -c "CREATE TABLESPACE ${PSQLUSRTBSP} LOCATION '${TEMPDIR}';"
     psql -c "GRANT ALL ON TABLESPACE ${PSQLUSRTBSP} to ${PSQLUSR};"
 fi
+#
+export TBL_SPC=$( psql -qtc "SELECT oid FROM pg_catalog.pg_tablespace WHERE spcname='${PSQLUSRTBSP}';" | tr -d ' ')
+#
+export DATA_DIR=$( psql -qtc "SELECT setting FROM pg_settings WHERE name = 'data_directory';")
+echo $DATA_DIR/pg_tblspc/$TBL_SPC
+ls -l $DATA_DIR/pg_tblspc/
+echo " * * * FIXME :  NEED TO RECREATE TABLESPACE \"${PSQLUSRTBSP}\" IN \"${PSQLUSR_HOME}\"AND PLACE DATABASE \"${PSQLUSRDB}\" ON IT"
+exit
 
 [[ $(psql ${PSQLUSRDB} -c "" >/dev/null 2>&1 ; echo $?) -gt 0 ]] && \
     psql -c "CREATE DATABASE ${PSQLUSRDB} TABLESPACE ${PSQLUSRTBSP};"
+
 
