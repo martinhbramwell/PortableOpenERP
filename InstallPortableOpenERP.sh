@@ -38,7 +38,6 @@ then
  #
  echo "D) Install new volume"
  source $DEFDIR/ipoerpInstallNewVolume.sh
- exit
  #
  echo "E) Prepare users and directories"
  source $DEFDIR/ipoerpPrepareUsersAndDirectories.sh
