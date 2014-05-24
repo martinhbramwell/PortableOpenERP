@@ -3,8 +3,8 @@
 DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
 #
 # Load environment variables
-source $DEFDIR/CreateParameters.sh
 source $DEFDIR/MountParameters.sh
+source $DEFDIR/CreateParameters.sh  # depends on MountParameters.sh
 #
 ls -l ${HOMEDEVICE} 2> /dev/null
 if [[  $? -gt 0  ]]
@@ -69,10 +69,16 @@ then
  echo "N) Patch IPTables and refresh firewall."
  source $DEFDIR/ipoerpPatchIPTables.sh
  #
+ echo "               -----------------------   "
  echo "Finished! A reboot is not required, but might be a good idea."
  echo "The first time a page is accessed, some files are not found.  A refresh is required, one time only, to get them."
  echo "Visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
  echo "Login  : admin:${PSQLUSRPWD}"
+echo before commented block
+: <<'COMMENTEDBLOCK'
+#
+COMMENTEDBLOCK
+echo after commented block
  #
 else
  #
