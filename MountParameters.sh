@@ -18,6 +18,9 @@ export FLAGTAG="THE-AREA-BELOW-IS-RESERVED-FOR-PATCHING"
 export POSTGRESUSR="postgres"
 export OPENERPUSR="openerp"
 #
+# Database backup archive
+# /srv/site_bkp.tar.bz2
+#
 # The hypervisor label used for this device, if such is required.
 export DEVICELABEL="" # eg, "Volume 4775"
 #
