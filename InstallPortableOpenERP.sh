@@ -24,8 +24,14 @@ Low memory : ${MEM}kB.    Quitting . . .
    exit 1
 fi
 #
+export DATABASE_EXISTS="unknown"
 if [[  -z ${PARTIAL_BUILD}  ]]
 then
+#
+echo "Commented out >>>"
+: <<'COMMENTEDBLOCK_1'
+COMMENTEDBLOCK_1
+echo "End commented section. <<<"
  #
  echo "A) Fulfill all aptitude dependencis"
  source $DEFDIR/ipoerpAptDependencies.sh
@@ -74,11 +80,11 @@ then
  echo "The first time a page is accessed, some files are not found.  A refresh is required, one time only, to get them."
  echo "Visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
  echo "Login  : admin:${PSQLUSRPWD}"
-echo before commented block
-: <<'COMMENTEDBLOCK'
 #
-COMMENTEDBLOCK
-echo after commented block
+echo "Commented out >>>"
+: <<'COMMENTEDBLOCK_2'
+COMMENTEDBLOCK_2
+echo "End commented section. <<<"
  #
 else
  #

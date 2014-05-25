@@ -57,17 +57,20 @@ else
   echo "Tablespace ${PSQLUSRTBSP} already defined."
 fi
 #
-
-if [[ 1 == 0  ]]   #  If we create our main database now, OpenERP can't create it.
+if [[ $(psql ${PSQLUSRDB} -c "" >/dev/null 2>&1 ; echo $?) -gt 0 ]]
 then
-  if [[ $(psql ${PSQLUSRDB} -c "" >/dev/null 2>&1 ; echo $?) -gt 0 ]]
+  echo "When Odoo is up an running, create database ${PSQLUSRDB}."
+  if [[ 1 == 0  ]]
   then
     echo "Create database ${PSQLUSRDB}.($(whoami))"
     psql -c "CREATE DATABASE ${PSQLUSRDB} TABLESPACE ${PSQLUSRTBSP};"
-  else
-    echo "Database ${PSQLUSRDB} already exists."
   fi
+else
+  echo "Database ${PSQLUSRDB} already exists.  Backing up to ${PSQLUSR_HOME}/backups/${PSQLUSRDB}.gz."
+  pg_dump ${PSQLUSRDB} | gzip > ${PSQLUSR_HOME}/backups/${PSQLUSRDB}.gz
+  echo "Database ${PSQLUSRDB} has been backed up."
 fi
+#
 
 
 
