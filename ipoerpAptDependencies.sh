@@ -30,12 +30,12 @@ aptProcess() {
         #
     popd
     rm -fr ~/tmpxxxxxtmp
-    touch lastApt
+    touch /tmp/lastApt
 }
 #
-if [[ -f lastApt ]]
+if [[ -f /tmp/lastApt ]]
 then
-    if [[ $(find "lastApt" -mmin +721) ]]
+    if [[ $(find "/tmp/lastApt" -mmin +721) ]]
     then
         echo "Dependencies are stale."
         aptProcess
