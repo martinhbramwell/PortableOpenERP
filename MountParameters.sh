@@ -19,7 +19,8 @@ export POSTGRESUSR="postgres"
 export OPENERPUSR="openerp"
 #
 # Database backup archive
-# /srv/site_bkp.tar.bz2
+export SITE_ARCHIVE=""  # eg, "/srv/site_tkd.tar.bz2"
+export DATABASE_ARCHIVE=""  # eg, "/srv/site_tkd/postgres/backups/site_tkd_db.gz"
 #
 # The hypervisor label used for this device, if such is required.
 export DEVICELABEL="" # eg, "Volume 4775"

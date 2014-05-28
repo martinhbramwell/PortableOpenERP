@@ -26,8 +26,8 @@ else
  echo "User ${PSQLUSR} already exists"
 fi
 #
-chown -R postgres:${PSQLUSR} ${PSQLUSR_HOME}
-chmod -R 770 ${PSQLUSR_HOME}
+chown postgres:${PSQLUSR} ${PSQLUSR_HOME}
+chmod 770 ${PSQLUSR_HOME}
 #
 mkdir -p /opt/openerp
 [[  1 -gt $(getent passwd | grep -c "^openerp") ]] && useradd -d /opt/openerp openerp
@@ -43,7 +43,7 @@ else
 fi
 #
 mkdir -p                       ${OERPUSR_WORK}/source/
-chown -R    openerp:openerp    ${OERPUSR_WORK}
+chown       openerp:openerp    ${OERPUSR_WORK}
 #
 mkdir -p                       ${OERPUSR_WORK}/server
 if [[ ! -f ${OERPUSR_WORK}/server/openerp/__init__.py  ]]

@@ -1,6 +1,7 @@
 #!/bin/bash
 #
-if [[ -z ${OERPUSR_WORK}  ||  -z ${OERPUSR_HOME}  || -z ${PSQLUSR} || -z ${PSQLUSRPWD}  || -z ${ACCESS_PORT}  ]]
+# if [[ -z ${OOO}  ||  -z ${OERPUSR_WORK}  ||  -z ${OERPUSR_HOME}  || -z ${PSQLUSR} || -z ${PSQLUSRPWD}  || -z ${ACCESS_PORT}  ]]
+if [[                  -z ${OERPUSR_WORK}  ||  -z ${OERPUSR_HOME}  || -z ${PSQLUSR} || -z ${PSQLUSRPWD}  || -z ${ACCESS_PORT}  ]]
 then
 #
 echo "Usage :  ./ipoerpMakeOerpServerConfigFile.sh"

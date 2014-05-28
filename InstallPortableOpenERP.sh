@@ -28,11 +28,9 @@ export DATABASE_EXISTS="unknown"
 if [[  -z ${PARTIAL_BUILD}  ]]
 then
 #
+ #
 echo "Commented out >>>"
 : <<'COMMENTEDBLOCK_1'
-COMMENTEDBLOCK_1
-echo "End commented section. <<<"
- #
  echo "A) Fulfill all aptitude dependencis"
  source $DEFDIR/ipoerpAptDependencies.sh
  #
@@ -43,7 +41,7 @@ echo "End commented section. <<<"
  source $DEFDIR/iredmailInstallAll.sh
  #
  echo "D) Install new volume"
- source $DEFDIR/ipoerpInstallNewVolume.sh
+ source $DEFDIR/ipoerpInstallVolume.sh
  #
  echo "E) Prepare users and directories"
  source $DEFDIR/ipoerpPrepareUsersAndDirectories.sh
@@ -51,9 +49,14 @@ echo "End commented section. <<<"
  echo "F) Generate OpenERP server configuration file"
  source $DEFDIR/ipoerpMakeOerpServerConfigFile.sh
  #
+COMMENTEDBLOCK_1
+echo "End commented section. <<<"
  echo "G) Prepare PostgreSQL User and Tablespace"
  su postgres -c "source $DEFDIR/ipoerpPreparePgUserAndTablespace.sh"
  #
+###
+echo "Commented out >>>"
+: <<'COMMENTEDBLOCK_2'
  echo "H) Update OpenERP source code."
  su openerp -c "source $DEFDIR/ipoerpUpdateOpenErpSourceCode.sh"
  #
@@ -81,8 +84,6 @@ echo "End commented section. <<<"
  echo "Visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
  echo "Login  : admin:${PSQLUSRPWD}"
 #
-echo "Commented out >>>"
-: <<'COMMENTEDBLOCK_2'
 COMMENTEDBLOCK_2
 echo "End commented section. <<<"
  #
