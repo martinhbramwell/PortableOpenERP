@@ -28,7 +28,7 @@ function user_exist()
   [[ ${USER_COUNT} -lt 1 ]]  &&  USER_EXISTS="yes"
   echo "Database ${PSQLUSRDB} has USER ${1}."
 }
-export -f restore_archive
+export -f user_exist
 #
 #
 function restore_archive()

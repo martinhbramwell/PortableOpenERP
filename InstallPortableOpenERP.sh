@@ -31,6 +31,8 @@ then
  #
 echo "Commented out >>>"
 : <<'COMMENTEDBLOCK_1'
+COMMENTEDBLOCK_1
+echo "End commented section. <<<"
  echo "A) Fulfill all aptitude dependencis"
  source $DEFDIR/ipoerpAptDependencies.sh
  #
@@ -49,14 +51,13 @@ echo "Commented out >>>"
  echo "F) Generate OpenERP server configuration file"
  source $DEFDIR/ipoerpMakeOerpServerConfigFile.sh
  #
-COMMENTEDBLOCK_1
-echo "End commented section. <<<"
- echo "G) Prepare PostgreSQL User and Tablespace"
- su postgres -c "source $DEFDIR/ipoerpPreparePgUserAndTablespace.sh"
+ echo "G) Create or restore database"
+ source $DEFDIR/ipoerpPrepareDatabase.sh
  #
-###
-echo "Commented out >>>"
-: <<'COMMENTEDBLOCK_2'
+ #
+# echo "G) Prepare PostgreSQL User and Tablespace"
+# su postgres -c "source $DEFDIR/ipoerpPreparePgUserAndTablespace.sh"
+# #
  echo "H) Update OpenERP source code."
  su openerp -c "source $DEFDIR/ipoerpUpdateOpenErpSourceCode.sh"
  #
@@ -84,6 +85,9 @@ echo "Commented out >>>"
  echo "Visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
  echo "Login  : admin:${PSQLUSRPWD}"
 #
+###
+echo "Commented out >>>"
+: <<'COMMENTEDBLOCK_2'
 COMMENTEDBLOCK_2
 echo "End commented section. <<<"
  #
