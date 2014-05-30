@@ -1,0 +1,469 @@
+#!/bin/bash
+#
+# if [[  -z ${OOO} || -z ${SITENAME} || -z ${PSQLUSR} || -z ${PSQLUSRPWD}  || -z ${PSQLUSRTBSP}  || -z ${PSQLUSRDB}  || -z ${PSQLUSR_HOME}  ]]
+if [[                 -z ${SITENAME} || -z ${PSQLUSR} || -z ${PSQLUSRPWD}  || -z ${PSQLUSRTBSP}  || -z ${PSQLUSRDB}  || -z ${PSQLUSR_HOME}  ]]
+then
+#
+echo "Usage :  ./ipoerpRecreatePgUserAndTablespace.sh"
+echo "With required variables :"
+echo " -     SITENAME : ${SITENAME}"
+echo " -   PSQLUSRPWD : ${PSQLUSRPWD}"
+echo " -      PSQLUSR : ${PSQLUSR}"
+echo " - PSQLUSR_HOME : ${PSQLUSR_HOME}"
+echo " -  PSQLUSRTBSP : ${PSQLUSRTBSP}"
+echo " -    PSQLUSRDB : ${PSQLUSRDB}"
+exit 0
+#
+fi
+#
+psql postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='USR_NAME'"
+#
+function user_exist()
+{
+  echo "Check for user \"${1}\""
+  USER_COUNT=$(psql -qtc \
+    "SELECT count(rolname) FROM pg_roles \
+     WHERE rolname = '${1}';" ${PSQLUSRDB})
+  [[ $? -gt 0 ]]  &&   return ${UNEXPECTED_DATA}
+  [[ ${USER_COUNT} -lt 1 ]]  &&  USER_EXISTS="yes"
+  echo "Database ${PSQLUSRDB} has USER ${1}."
+}
+export -f restore_archive
+#
+#
+function restore_archive()
+{
+  echo "Restoring archive \"${DATABASE_ARCHIVE}\" if possible."
+  if [[ -f ${DATABASE_ARCHIVE} ]]
+  then
+    gunzip -c ${DATABASE_ARCHIVE} | psql ${PSQLUSRDB}
+    RSLT = $?
+    [[ ${RSLT} -gt 0 ]]  &&   return ${UNEXPECTED_DATA}
+    echo  "No errors reported by restore process."
+  else
+    echo "No such archive file"
+    return ${UNEXPECTED_DATA}
+  fi
+}
+export -f restore_archive
+#
+#
+function database_empty()
+{
+  echo "Is database empty?"
+  TABLE_COUNT=$(psql -qtc \
+    "SELECT count(table_name) FROM information_schema.tables \
+     WHERE table_schema = 'public';" ${PSQLUSRDB})
+  [[ $? -gt 0 ]]  &&   return ${UNEXPECTED_DATA}
+  [[ ${TABLE_COUNT} -lt 1 ]]  &&  DATABASE_EMPTY="yes"
+  echo "Database ${PSQLUSRDB} has ${TABLE_COUNT} tables."
+
+}
+export -f database_empty
+#
+#
+function detect_pg_database()
+{
+  echo "Detecting PG database"
+  DBOID=$(psql -qtc \
+    "SELECT oid FROM pg_database \
+     WHERE datname = '${PSQLUSRDB}';" \
+    | tr -d ' ')
+  [[ ! "XX" == "X${DBOID}X" ]]  &&  DATABASE_DETECTED="yes"
+}
+export -f detect_pg_database
+#
+#
+function detect_fs_tablespace()
+{
+  echo "Detecting FS tablespace : ${TABLESPACE_DIRECTORY}"
+  #
+  pushd ${TABLESPACE_DIRECTORY} > /dev/null 2>&1
+  if [[ $? -eq 0  ]]
+  then
+    TABLESPACE_DATABASES=(*)
+    popd > /dev/null
+    TABLESPACE_DATABASES_COUNT=${#TABLESPACE_DATABASES[@]}
+  else
+    TABLESPACE_DATABASES_COUNT=0
+  fi
+  #
+  # echo "Count is  - - ${TABLESPACE_DATABASES_COUNT}"
+  #
+  if [[ ${TABLESPACE_DATABASES_COUNT} -lt 1  ]]
+  then
+    echo "No such tablespace on device."
+  elif [[ ${TABLESPACE_DATABASES_COUNT} -gt 1  ]]
+  then
+    echo "Detected ${TABLESPACE_DATABASES_COUNT} tablespaces. Fail."
+    return ${UNEXPECTED_DATA}
+  else
+    TABLESPACE_DETECTED="yes"
+    echo "Detected one tablespace"
+  fi
+}
+export -f detect_fs_tablespace
+#
+#
+function detect_pg_tablespace_location()
+{
+  TBL_SPC=$( \
+    psql -qtc \
+    "SELECT oid \
+     FROM pg_catalog.pg_tablespace \
+    WHERE spcname='${PSQLUSRTBSP}' \
+      AND pg_tablespace_location(oid) = '${1}' \
+     ;" | tr -d ' ')
+}
+export -f detect_pg_tablespace_location
+#
+#
+function detect_pg_tablespace()
+{
+  TBL_SPC_CNT=$( \
+    psql -qtc \
+    "SELECT COUNT(oid) FROM pg_catalog.pg_tablespace \
+    WHERE spcname='${PSQLUSRTBSP}';" | tr -d ' ')
+  echo "Count of tablespaces named \"${PSQLUSRTBSP}\": ${TBL_SPC_CNT}"
+  if [[  ${TBL_SPC_CNT} -eq 1  ]]
+  then
+    TBL_SPC_CNT=$( \
+      psql -qtc \
+      "SELECT COUNT(oid) \
+       FROM pg_catalog.pg_tablespace \
+      WHERE spcname='${PSQLUSRTBSP}' \
+        AND pg_tablespace_location(oid) = '${DATA_DIRECTORY_PATH}' \
+       ;" | tr -d ' ')
+    echo "Count of tablespaces named \"${PSQLUSRTBSP}\" pointing to \"${DATA_DIRECTORY_PATH}\": ${TBL_SPC_CNT}"
+    [[  ${TBL_SPC_CNT} -ne 1  ]] &&  return ${UNEXPECTED_DATA}
+    TABLESPACE_RECOGNIZED="yes"
+  fi
+}
+export -f detect_pg_tablespace
+#
+#
+function detect_pg_spc_database()
+{
+  DB_CHECK=$( \
+    psql -qtc  \
+    "SELECT d.oid FROM pg_database d \
+     LEFT JOIN pg_catalog.pg_tablespace t ON t.oid = d.dattablespace \
+    WHERE datistemplate = false \
+      AND spcname ='${PSQLUSRTBSP}' \
+      AND datname ='${PSQLUSRDB}' \
+    ;" | tr -d ' ')
+  echo "Database OID = ${DB_CHECK}"
+  [[ "XX" == "X${DB_CHECK}X" ]]  &&  return ${UNEXPECTED_DATA}
+  echo "Database in expected tablespace."
+}
+export -f detect_pg_spc_database
+#
+#
+function detect_pg_tablespaceCRAP()
+{
+  TBL_SPC_CNT=$( \
+    psql -qtc \
+    "SELECT COUNT(oid) FROM pg_catalog.pg_tablespace \
+    WHERE spcname='${PSQLUSRTBSP}';" | tr -d ' ')
+  echo "Tablespaces named \"${PSQLUSRTBSP}\": ${TBL_SPC_CNT}"
+  [[  ${TBL_SPC_CNT} -eq 1  ]] &&  TABLESPACE_RECOGNIZED="yes"
+
+  TBL_SPC=$( \
+    psql -qtc \
+    "SELECT oid \
+     FROM pg_catalog.pg_tablespace \
+    WHERE spcname='${PSQLUSRTBSP}' \
+      AND pg_tablespace_location(oid) = '/srv/site_tkd/postgres/junk' \
+     ;" | tr -d ' ')
+
+#  if [[  ${TBL_SPC_CNT} -gt 0 ]]
+#  then
+#    DB_CHECK=$( \
+#      psql -qtc  \
+#      "SELECT d.oid FROM pg_database d \
+#       LEFT JOIN pg_catalog.pg_tablespace t ON t.oid = d.dattablespace \
+#      WHERE datistemplate = false \
+#        AND spcname ='${PSQLUSRTBSP}' \
+####          AND datname ='${PSQLUSRDB}' \
+#      ;" | tr -d ' ')
+#  fi
+#  echo "Database OID = ${DB_CHECK}"
+#  [[ ! "XX" == "X${DB_CHECK}X" ]]  &&  TABLESPACE_RECOGNIZED="yes"
+
+}
+#
+#
+function create_tablespace()
+{
+  echo "Creating tablespace \"${PSQLUSRTBSP}\" in \"${DATAPATH}\"..."
+  psql -c "CREATE TABLESPACE ${PSQLUSRTBSP} \
+           LOCATION '${DATAPATH}';"
+}
+export -f create_tablespace
+#
+#
+function create_database()
+{
+  echo "Creating database \"${PSQLUSRDB}\" ..."
+  psql -c "CREATE DATABASE ${PSQLUSRDB} TABLESPACE ${PSQLUSRTBSP};"
+}
+export -f create_database
+
+declare DO_NOTHING=0
+declare CREATE_IN_NEW_TABLESPACE=1
+declare RESTORE_TO_NEW_TABLESPACE=2
+declare CREATE_IN_EXISTING_TABLESPACE=3
+declare RESTORE_TO_EXISTING_TABLESPACE=4
+declare UNEXPECTED_DATA=99
+
+function database_status()
+{
+  echo "We are given database name and tablespace name."
+  echo "If we cannot find a tablespace marker \"PG_*\" or a database oid in postgres/data we know we must"
+  echo "   make a new tablespace, then create the database from scratch or restore from backup."
+  declare TABLESPACE_DETECTED="no"
+  echo "If there is no backup file we know we must create the database from scratch."
+  declare ARCHIVE_DETECTED="no"
+  echo "If there is a backup file and no database can be found in the tablespace, we must create a "
+  echo "   database in the tablespace by restoring."
+  declare DATABASE_DETECTED="no"
+  echo "If a tablespace is detected, we check if Postgres recognizes that location."
+  declare TABLESPACE_RECOGNIZED="no"
+  echo "If postgres recognizes the location we check if there is a database with the required name"
+  declare DATABASE_RECOGNIZED="no"
+  echo "If the right database is there, does it's OID match any of the OIDs in the indicated tablespace."
+  declare DATABASE_MATCHES="no"
+  declare USER_EXISTS="no"
+  echo ""
+  #
+  DATABASE_ARCHIVE="/srv/${SITENAME}/postgres/backups/${PSQLUSRDB}.gz"
+  DATA_DIRECTORY_PATH="/srv/${SITENAME}/postgres/data"
+  TABLESPACE_DIRECTORY="${DATA_DIRECTORY_PATH}/PG_*/"
+  # TABLESPACE_DIRECTORY="/srv/${SITENAME}/postgres/junk/PG_*/"
+  TABLESPACE_DATABASES_COUNT=0
+  #
+
+  echo "Investigate tablespace and database."
+  detect_pg_database
+  if [[  ${DATABASE_DETECTED} == "yes"  ]]
+  then
+    echo "Found database \"${PSQLUSRDB}\".  Does postgres reconize tablespace \"${PSQLUSRTBSP}\"?"
+    detect_pg_tablespace
+    if [[  ${TABLESPACE_RECOGNIZED} == "yes"  ]]
+    then
+      detect_pg_spc_database ; RSLT=$?
+      [[ ${RSLT} == ${UNEXPECTED_DATA} ]] && return ${UNEXPECTED_DATA}
+      detect_fs_tablespace ; RSLT=$?
+      if [[  ${TABLESPACE_DETECTED} == "yes"  ]]
+      then
+        echo "Expected tablespace found."
+        database_empty
+        if [[  ${DATABASE_EMPTY} == "yes"  ]]
+        then
+          echo "Database is empty.  Users exist?"
+          user_exists
+          if [[  ${USER_EXISTS} == "no"  ]]
+          then
+            echo "Required user \"${PSQLUSR}\" not found.  Create."
+            exit
+          fi
+          echo "Have database owner.  Restore from archive?"
+          restore_archive
+        else
+          echo "Database is NOT empty.  Assume it is an Odoo database.  Do nothing?"
+          return ${DO_NOTHING}
+        fi
+      else
+        echo "Expected tablespace path missing.  Quitting . . "
+        return ${UNEXPECTED_DATA}
+      fi
+      exit
+    else
+      echo "Found database \"${PSQLUSRDB}\", but not in tablespace \"${PSQLUSRTBSP}\".    Quitting . . . "
+      exit
+    fi
+    return ${DO_NOTHING}
+    #
+  else
+    echo "No such database.  Does postgres recognize tablespace \"${PSQLUSRTBSP}\"?"
+    detect_pg_tablespace
+    if [[  ${TABLESPACE_RECOGNIZED} == "yes"  ]]
+    then
+      echo "Postgres has tablespace."
+      detect_fs_tablespace
+      [[ $? == ${UNEXPECTED_DATA} ]] && return ${UNEXPECTED_DATA}
+      if [[ ${TABLESPACE_DETECTED} == "yes"  ]]
+      then
+        echo "Got a filesystem tablespace.  Database ${PSQLUSRDB} is there?"
+        detect_pg_database
+  #      rm -fr ${TABLESPACE_DIRECTORY}
+      else
+        echo "Got no filesystem tablespace."
+      fi
+      exit
+
+    else
+      echo "Postgres has no such tablespace."
+    fi
+    exit
+#    echo "No such database.  Prepare tablespace \"${PSQLUSRTBSP}\" and then create database \"${PSQLUSRDB}\"."
+    detect_fs_tablespace
+    [[ $? == ${UNEXPECTED_DATA} ]] && return ${UNEXPECTED_DATA}
+    if [[ ${TABLESPACE_DETECTED} == "yes"  ]]
+    then
+      echo "Got a useless tablespace. Deleting it."
+      rm -fr ${TABLESPACE_DIRECTORY}
+    else
+      detect_pg_tablespace
+      if [[  ${TABLESPACE_RECOGNIZED} == "yes"  ]]
+      then
+        detect_fs_tablespace ; RSLT=$?
+        [[ ${RSLT} == ${UNEXPECTED_DATA} ]] && return ${UNEXPECTED_DATA}
+        #
+        if [[ ! ${TABLESPACE_RECOGNIZED} == "yes"  ]]
+        then
+          echo "Have no tablespace"
+        fi
+        exit
+      else
+        echo "Found database \"${PSQLUSRDB}\", but not in tablespace \"${PSQLUSRTBSP}\".    Quitting . . . "
+        exit
+      fi
+      return ${DO_NOTHING}
+      #
+    fi
+    echo "Create tablespace \"${PSQLUSRTBSP}\""
+    create_tablespace
+    # echo "Create database \"${PSQLUSRDB}\""
+    # create_database
+    echo "Attempt to restore archive \"${DATABASE_ARCHIVE}\""
+    restore_archive
+    exit
+  fi
+  exit
+
+  if [[  ${DATABASE_MATCHES} == "yes"  ]]
+  then
+    echo "Everything seems to have been done already"
+    return ${DO_NOTHING}
+    #
+  elif [[  ${DATABASE_RECOGNIZED} == "no"  &&
+           ${DATABASE_DETECTED}   == "no"  ]]
+  then
+    if [[  ${ARCHIVE_DETECTED} == "yes"  ]]
+    then
+      echo "Restore archive to correct tablespace."
+      return ${RESTORE_TO_EXISTING_TABLESPACE}
+      #
+    else
+      echo "Create database from scratch."
+      return ${CREATE_IN_EXISTING_TABLESPACE}
+      #
+    fi
+  fi
+  echo "No conditions matched."
+  return ${UNEXPECTED_DATA}
+
+
+
+
+
+
+  #
+  if [[  -d ${TABLESPACE_DIRECTORY}  ]]
+  then
+    pushd ${TABLESPACE_DIRECTORY} > /dev/null
+    TABLESPACE_DATABASES=(*)
+    popd > /dev/null
+    TABLESPACE_DATABASES_COUNT=${#TABLESPACE_DATABASES[@]}
+  fi
+  #
+  if [[ ${TABLESPACE_DATABASES_COUNT} -gt 0  ]]
+  then
+    echo "Found ${TABLESPACE_DATABASES_COUNT} databases in ${TABLESPACE_DIRECTORY}"
+    IDX=0
+    while [ "${IDX}" -lt "${TABLESPACE_DATABASES_COUNT}" ]
+    do    # List all the elements in the array.
+      echo "Data base : \"${TABLESPACE_DATABASES[${IDX}]}\""
+      ((IDX++))
+    done
+    TABLESPACE_DETECTED="yes"
+    echo "Detected a tablespace"
+  else
+    echo "Must create a tablespace"
+  fi
+  echo "    .    .    .    .    .    .    .    ."
+  #
+  [[  -f ${DATABASE_ARCHIVE}  ]] && ARCHIVE_DETECTED="yes"
+  echo "Archive found : ${ARCHIVE_DETECTED}"
+  #
+  echo "    .    .    .    .    .    .    .    ."
+  #
+  TBL_SPC_CNT=$( \
+    psql -qtc \
+    "SELECT COUNT(oid) FROM pg_catalog.pg_tablespace \
+    WHERE spcname='${PSQLUSRTBSP}';" | tr -d ' ')
+  echo "Tablespaces named \"${PSQLUSRTBSP}\": ${TBL_SPC_CNT}"
+  echo "    .    .    .    .    .    .    .    ."
+  #
+  TBL_SPC=$( \
+    psql -qtc \
+    "SELECT oid \
+     FROM pg_catalog.pg_tablespace \
+    WHERE spcname='${PSQLUSRTBSP}' \
+      AND pg_tablespace_location(oid) = '/srv/site_tkd/postgres/junk' \
+     ;" | tr -d ' ')
+  echo "Tablespace \"${PSQLUSRTBSP}\" id = ${TBL_SPC}"
+  echo "    .    .    .    .    .    .    .    ."
+  #
+  DB_PRESENT=($( \
+    psql -qtc \
+    "SELECT oid, datname FROM pg_database \
+    WHERE datistemplate = false \
+      AND dattablespace = ${TBL_SPC} \
+      ;" | tr -d ' '))
+  echo ${DB_PRESENT[0]}
+  echo ${DB_PRESENT[1]}
+  echo "    .    .    .    .    .    .    .    ."
+  #
+  DB_CHECK=($( \
+    psql -t -A -F"," -c  \
+    "SELECT d.oid FROM pg_database d \
+     LEFT JOIN pg_catalog.pg_tablespace t ON t.oid = d.dattablespace \
+    WHERE datistemplate = false \
+      AND spcname ='${PSQLUSRTBSP}' \
+      AND datname ='cramp' \
+    ;" | tr -d ' '))
+  #
+  echo "    .    .    .    .    .    .    .    ."
+  #
+  if [[ "X" == "X${DB_CHECK}" ]]
+  then
+    echo "Didn't find database \"${PSQLUSRDB}\"."
+  else
+    echo "Database \"${DB_CHECK[0]}\" resides in tablespace \"${PSQLUSRTBSP}\""
+    echo "Database \"${DB_CHECK[1]}\" resides in tablespace \"${PSQLUSRTBSP}\""
+  fi
+  echo ${DB_CHECK}
+
+}
+export -f database_status
+#
+echo "Preparing database"
+
+su postgres -c "database_status"
+
+exit
+case "$?" in
+    ${RESTORE_TO_EXISTING_TABLESPACE})
+        echo "Restore to existing tablespace"
+        ;;
+    ${CREATE_IN_NEW_TABLESPACE})
+        echo "Create in new tablespace"
+        ;;
+    *) #default execute
+        echo "Do nothing"
+esac
+
+# su postgres -c "database_exists"
+echo "Prepared database"
