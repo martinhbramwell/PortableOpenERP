@@ -51,6 +51,10 @@ function detect_pg_spc_database()
       AND spcname ='${PSQLUSRTBSP}' \
       AND datname ='${PSQLUSRDB}' \
     ;" | tr -d ' ')
+
+echo "SELECT d.oid FROM pg_database d LEFT JOIN pg_catalog.pg_tablespace t ON t.oid = d.dattablespace WHERE datistemplate = false AND spcname ='${PSQLUSRTBSP}' AND datname ='${PSQLUSRDB}';"
+
+
   echo "Database OID = ${DB_CHECK}"
   [[ "XX" == "X${DB_CHECK}X" ]]  &&  return ${UNEXPECTED_DATA}
   echo "Database in expected tablespace."
@@ -79,7 +83,8 @@ function restore_archive()
   if [[ "XX" == "X${DBOID}X" ]]
   then
     echo "Creating DB \"${PSQLUSRDB}\" first."
-    createdb ${PSQLUSRDB}
+    psql -qtc "CREATE TABLESPACE ${PSQLUSRDB} \
+                  LOCATION '${DATA_DIRECTORY_PATH}';"
   fi
   #
   if [[ -f ${DATABASE_ARCHIVE} ]]
@@ -242,7 +247,7 @@ function database_status()
   detect_pg_database
   if [[  ${DATABASE_DETECTED} == "yes"  ]]
   then
-    echo "Postgres has database \"${PSQLUSRDB}\"?   YES.  Does postgres reconize tablespace \"${PSQLUSRTBSP}\"?"
+    echo "Postgres has database \"${PSQLUSRDB}\"?   YES.  Does postgres recognize tablespace \"${PSQLUSRTBSP}\"?"
     detect_pg_tablespace
     if [[  ${TABLESPACE_RECOGNIZED} == "yes"  ]]
     then
@@ -295,10 +300,12 @@ function database_status()
         create_tablespace
       fi
     else
-      echo "Filesystem tablespace \"${PSQLUSRTBSP}\" exists as \"${TABLESPACE_DIRECTORY}\", but Postgres does not have it.  Deleting and recreating."
-      drop_fs_tablespace
-      echo "Tablespace dropped.  Creating new tablespace"
-      create_tablespace
+#      echo "Filesystem tablespace \"${PSQLUSRTBSP}\" exists as \"${TABLESPACE_DIRECTORY}\", but Postgres does not have it.  Deleting and recreating."
+#      drop_fs_tablespace
+#      echo "Tablespace dropped.  Creating new tablespace"
+
+       echo "Creating new tablespace"
+       create_tablespace
     fi
     #
     echo "Got a filesystem tablespace. Users exist?"
@@ -308,8 +315,11 @@ function database_status()
       echo "Required user \"${PSQLUSR}\" not found.  Create."
       create_user  ${PSQLUSR}
     fi
-    echo "Have database owner.  Restore from archive?"
-    restore_archive
+    echo "Have database owner.  Restore from archive ${DATABASE_ARCHIVE}?"
+    if [[ -f ${DATABASE_ARCHIVE} ]]
+    then
+      restore_archive
+   fi
   fi
   #
 }

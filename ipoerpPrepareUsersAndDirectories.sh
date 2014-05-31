@@ -26,8 +26,9 @@ else
  echo "User ${PSQLUSR} already exists"
 fi
 #
-chown postgres:${PSQLUSR} ${PSQLUSR_HOME}
-chmod 770 ${PSQLUSR_HOME}
+chown -R postgres:${PSQLUSR} ${PSQLUSR_HOME}
+find ${PSQLUSR_HOME} -type d -exec chmod 770 {} +
+find ${PSQLUSR_HOME} -type f -exec chmod 660 {} +
 #
 mkdir -p /opt/openerp
 [[  1 -gt $(getent passwd | grep -c "^openerp") ]] && useradd -d /opt/openerp openerp

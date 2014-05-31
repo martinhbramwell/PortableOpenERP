@@ -1,9 +1,13 @@
 #!/bin/bash
+#                        ############################################################################
+#                        ############################################################################
+#                        ######### Use this after restoring an archive ##############################
+#                        ############################################################################
+#                        ############################################################################
+#                        ############################################################################
+#                        ############################################################################
 #
-FLAGTAG="THE-AREA-BELOW-IS-RESERVED-FOR-PATCHING"
-ODOOBASE=""
-#
-function validate_parms()
+function validate_parms_msv()
 {
   if [[ -z ${HOMEDEVICE}  ]]
   then
@@ -12,30 +16,90 @@ function validate_parms()
     exit
   fi
   #
-  if [[ -z ${LBL_OPENERP}  || -z ${LBL_POSTGRES}  || -z ${FLAGTAG}  || -z ${DEVICELABEL} ]]
+  if [[ -z ${BB}  ||  -z ${OERPUSR_WORK}  || -z ${PSQLUSR_HOME}  || -z ${FLAGTAG}  || -z ${DEVICELABEL}
+     || -z ${PSQLUSR} || -z ${OPENERPUSR} || -z ${POSTGRESUSR} || -z ${SITEUSER} || -z ${OERPUSR_HOME}  ]]
+#  if [[                 -z ${OERPUSR_WORK}  || -z ${PSQLUSR_HOME}  || -z ${FLAGTAG}  || -z ${DEVICELABEL}
+#     || -z ${PSQLUSR} || -z ${OPENERPUSR} || -z ${POSTGRESUSR} || -z ${SITEUSER} || -z ${OERPUSR_HOME}  ]]
   then
     #
     echo "Usage :  ./ipoerpInstallNewVolume.sh  "
     echo "With required variables :"
-    echo " - LBL_OPENERP : ${LBL_OPENERP}"
-    echo " - LBL_POSTGRES : ${LBL_POSTGRES}"
     echo " - FLAGTAG : ${FLAGTAG}"
+    echo " - SITEUSER : ${SITEUSER}"
+    echo " - PSQLUSR : ${PSQLUSR}"
+    echo " - OPENERPUSR : ${OPENERPUSR}"
+    echo " - POSTGRESUSR : ${POSTGRESUSR}"
     echo " - DEVICELABEL : ${DEVICELABEL}"
+    echo " - OERPUSR_WORK : ${OERPUSR_WORK}"
+    echo " - PSQLUSR_HOME : ${PSQLUSR_HOME}"
+    echo " - OERPUSR_HOME : ${OERPUSR_HOME}"
     # echo " -  : ${}"
     exit
   fi
 }
 #
+function prepare_users_dirs()
+{
+  #
+  echo "Creating dummy directories: \"${OERPUSR_WORK}\" and \"${PSQLUSR_HOME}\"."
+  mkdir -p ${OERPUSR_WORK}
+  mkdir -p ${PSQLUSR_HOME}
+  #
+  if [[  1 -gt $(getent passwd ${PSQLUSR} | grep -c "^${PSQLUSR}")  ]]
+  then
+   echo "Creating user \"${PSQLUSR}\""
+   useradd -d ${PSQLUSR_HOME} ${PSQLUSR}
+   usermod -a -G ${POSTGRESUSR} ${PSQLUSR}
+  else
+   echo "User \"${PSQLUSR}\" exists."
+  fi
+  #
+  mkdir -p /opt/${OPENERPUSR}
+  if [[  1 -gt $(getent passwd ${OPENERPUSR} | grep -c "^${OPENERPUSR}")  ]]
+  then
+   echo "Creating user \"${OPENERPUSR}\""
+   useradd -d /opt/${OPENERPUSR} ${OPENERPUSR}
+  else
+   echo "User \"${OPENERPUSR}\" exists."
+  fi
+  #
+  if [[  1 -gt $(getent passwd ${SITEUSER} | grep -c "^${SITEUSER}")  ]]
+  then
+   echo "Creating user \"${SITEUSER}\" "
+   useradd -d ${OERPUSR_HOME} ${SITEUSER}
+   usermod -a -G ${OPENERPUSR} ${SITEUSER}
+  else
+   echo "User \"${SITEUSER}\" exists."
+  fi
+}
+#
+#
+validate_parms_msv
+prepare_users_dirs
+situate_files
+exit
+
+#
+echo "Commented out >>>>>>>>>>>>> Probably duplicate crap.  >>>>>>>>>>>>>>>>>>>"
+: <<'COMMENTEDBLOCK_1'
+FLAGTAG="THE-AREA-BELOW-IS-RESERVED-FOR-PATCHING"
+ODOOBASE=""
+#
+#
+export SITE_NAME=""
+export TEMP_DIR=""
+export TEMP_DIR_ORIG=""
+#
 function process_vars()
 {
  source ${1}/UpStartVars.sh
- if [[ -z ${UPSTART_JOB} || -z ${SITE_NAME} || -z ${SITE_USER} || -z ${PSQL_USER} ]]
+ if [[ -z ${UPSTART_JOB} || -z ${SITE_NAME} || -z ${SITEUSER} || -z ${PSQLUSR} ]]
  then
   echo "Missing one or both of :"
   echo " - UPSTART_JOB : ${UPSTART_JOB}"
   echo " - SITE_NAME : ${SITE_NAME}"
-  echo " - SITE_USER : ${SITE_USER}"
-  echo " - PSQL_USER : ${PSQL_USER}"
+  echo " - SITEUSER : ${SITEUSER}"
+  echo " - PSQLUSR : ${PSQLUSR}"
   umount /tmp/odoo/ > /dev/null 2>&1 || :
   exit
  else
@@ -76,10 +140,10 @@ function validate_attached_volume()
 #
 function validate_volume_content()
 {
-  echo "Mounting OpenERP at temporary location"
-  echo "======================================"
   TEMP_DIR="/tmp/odoo"
   TEMP_DIR_ORIG=${TEMP_DIR}
+  echo "Mounting OpenERP at temporary location ${TEMP_DIR}"
+  echo "================================================"
   mkdir -p ${TEMP_DIR}
   umount ${TEMP_DIR} > /dev/null 2>&1 || :
   mount ${HOMEDEVICE}${DEV_OPENERP} ${TEMP_DIR}
@@ -87,8 +151,8 @@ function validate_volume_content()
   echo "Checking for obligatory components"
   echo "=================================="
   #
-  ls -la ${TEMP_DIR}
-  if (( $? > 0 ))
+  FILES_COUNT=$(ls -la ${TEMP_DIR} | wc -l)
+  if [[ ( $? > 0) || ${FILES_COUNT} -lt 1 ]]
   then
     echo "Mount failed.  Quitting . . . "
     exit
@@ -98,6 +162,12 @@ function validate_volume_content()
   export OERPUSR_HOME="null"
   export PSQLUSR_HOME="null"
 
+  if [[ "${FILES_COUNT}" -lt "5" ]]
+  then
+    echo "There are no files; as if previous install was interrupted.  Continueing . . .  "
+    return 0
+  fi
+  #
   if [[ ! -f "${TEMP_DIR}/UpStartVars.sh" ]]
   then
     umount ${TEMP_DIR}/ > /dev/null 2>&1 || :
@@ -144,42 +214,6 @@ function validate_volume_content()
   [[ "${TEMP_DIR}" == "${TEMP_DIR_ORIG}" ]]  &&  umount ${TEMP_DIR}/ > /dev/null 2>&1 || :
   return 0
 }
-#
-function prepare_users_dirs()
-{
-  #
-  echo "Creating dummy directories: \"${OERPUSR_WORK}\" and \"${PSQLUSR_HOME}\"."
-  mkdir -p ${OERPUSR_WORK}
-  mkdir -p ${PSQLUSR_HOME}
-  #
-  if [[  1 -gt $(getent passwd ${PSQL_USER} | grep -c "^${PSQL_USER}")  ]]
-  then
-   echo "Creating user \"${PSQL_USER}\""
-   useradd -d ${PSQLUSR_HOME} ${PSQL_USER}
-   usermod -a -G ${POSTGRESUSR} ${PSQL_USER}
-  else
-   echo "User \"${PSQL_USER}\" exists."
-  fi
-  #
-  mkdir -p /opt/${OPENERPUSR}
-  if [[  1 -gt $(getent passwd ${OPENERPUSR} | grep -c "^${OPENERPUSR}")  ]]
-  then
-   echo "Creating user \"${OPENERPUSR}\""
-   useradd -d /opt/${OPENERPUSR} ${OPENERPUSR}
-  else
-   echo "User \"${OPENERPUSR}\" exists."
-  fi
-  #
-  if [[  1 -gt $(getent passwd ${SITE_USER} | grep -c "^${SITE_USER}")  ]]
-  then
-   echo "Creating user \"${SITE_USER}\" "
-   useradd -d ${OERPUSR_HOME} ${SITE_USER}
-   usermod -a -G ${OPENERPUSR} ${SITE_USER}
-  else
-   echo "User \"${SITE_USER}\" exists."
-  fi
-}
-#
 #
 function patch_fstab()
 {
@@ -265,12 +299,25 @@ function correct_ownerships()
 }
 #
 #
-#
-export SITE_NAME=""
-export TEMP_DIR=""
-export TEMP_DIR_ORIG=""
-#
-validate_parms
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 validate_attached_volume
 if [[ $? -gt 0 ]]
 then
@@ -279,7 +326,8 @@ then
   exit
 fi
 #
-echo "Found expected filesystem labels: \"${LBL_OPENERP}\" on \"${HOMEDEVICE}${DEV_OPENERP}\" and \"${LBL_POSTGRES}\" on \"${HOMEDEVICE}${DEV_POSTGRES}\"."
+echo "Found expected filesystem labels: \"${LBL_OPENERP}\" on \"${HOMEDEVICE}${DEV_OPENERP}\" \
+and \"${LBL_POSTGRES}\" on \"${HOMEDEVICE}${DEV_POSTGRES}\"."
 echo ""
 validate_volume_content
 prepare_users_dirs
@@ -293,4 +341,7 @@ mount -a
 situate_files
 correct_ownerships
 #
+
+COMMENTEDBLOCK_1
+echo "End commented section. <<<"
 

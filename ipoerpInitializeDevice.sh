@@ -66,6 +66,15 @@ else
  echo "====================="
  blkid ${HOMEDEVICE}*
  #
+
+###########      Go on to ipoerpPermanentMount.sh
+
+
+
+
+
+echo "Commented out >>>>>>>>>>>>> Moved to ipoerpPermanentMount.sh  >>>>>>>>>>>>>>>>>>>"
+: <<'COMMENTEDBLOCK_1'
  echo "Prepare places in the root file system"
  echo "======================================="
  mkdir -p /srv/$SITENAME/${OPENERPUSR}
@@ -106,3 +115,5 @@ mount -a
 #
 tree -L 2 /srv/$SITENAME
 #
+COMMENTEDBLOCK_1
+echo "End commented section. <<<"
