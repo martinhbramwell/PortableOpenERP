@@ -71,11 +71,14 @@ else
   then
     permanent_mount
     echo "Mounted filesystem with /etc/fstab/."
-  else
+  elif [[ -f ${OERPUSR_WORK}/UpStartVars.sh  ]]
+  then
     echo "Where do we go now?"
     exit
     mount_prepared_volume
     exit
+  else
+    echo "Assuming an install process was interrupted.  Continuing . . . "
   fi
   echo $RSLT
   #

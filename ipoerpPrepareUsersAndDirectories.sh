@@ -66,6 +66,10 @@ echo "Correcting permissions on ${OERPUSR_WORK}/server"
 chown -R    openerp:${OERPUSR} ${OERPUSR_WORK}/server
 chmod -R                   g+w ${OERPUSR_WORK}/server
 #
+echo "Correcting permissions on ${OERPUSR_WORK}/source"
+chown -R    openerp:${OERPUSR} ${OERPUSR_WORK}/source
+chmod -R                   g+w ${OERPUSR_WORK}/source
+#
 echo "Correcting ownership on ${OERPUSR_WORK}/log"
 mkdir -p                       ${OERPUSR_WORK}/log
 chown -R    openerp:${OERPUSR} ${OERPUSR_WORK}/log

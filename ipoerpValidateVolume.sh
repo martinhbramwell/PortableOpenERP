@@ -99,9 +99,33 @@ function validate_volume_content()
     return 0
   else
     FILES_COUNT=$(tree -L 3 /srv/site_mtt/ | wc -l)
-    if [[ "${FILES_COUNT}" -lt "17" ]]
+    INSTALL_STATE=$(ls -l /etc/init/*.conf | grep -c site_mtt)
+#    echo "-- ${INSTALL_STATE}"
+
+#    if [[ "${INSTALL_STATE}" -gt "0" ]]
+#    if [[ -f "${TEMP_DIR}/UpStartVars.sh" ]]
+    if [[ -f "${SITE_ARCHIVE}" ]]
+    then
+      echo "Where do we go now?"
+      exit
+    elif [[ "${FILES_COUNT}" -lt "17"  ]]
     then
       echo "There is only a file skeleton; as if previous install was interrupted.  Continuing . . .  "
+      EMPTY_FILESYSTEM_ON_VOLUME="yes"
+      return 0
+    elif [[ "${FILES_COUNT}" -eq "19"  ]]
+    then
+      echo "There is a file skeleton; as if previous install was interrupted.  Continuing . . .  "
+      EMPTY_FILESYSTEM_ON_VOLUME="yes"
+      return 0
+    elif [[ "${FILES_COUNT}" -eq "40"  ]]
+    then
+      echo "There is an partially installed system. Continuing . . .  "
+      EMPTY_FILESYSTEM_ON_VOLUME="yes"
+      return 0
+    elif [[ "${FILES_COUNT}" -eq "42"  ]]
+    then
+      echo "There is an partially installed system. Continuing . . .  "
       EMPTY_FILESYSTEM_ON_VOLUME="yes"
       return 0
     fi

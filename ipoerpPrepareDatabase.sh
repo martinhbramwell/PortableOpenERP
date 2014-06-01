@@ -268,7 +268,10 @@ function database_status()
             exit
           fi
           echo "Have database owner.  Restore from archive?"
-          restore_archive
+          if [[ -f ${DATABASE_ARCHIVE} ]]
+          then
+            restore_archive
+          fi
         else
           echo "Database is NOT empty.  Assume it is an Odoo database.  Do nothing?"
           return ${DO_NOTHING}
@@ -319,13 +322,13 @@ function database_status()
     if [[ -f ${DATABASE_ARCHIVE} ]]
     then
       restore_archive
-   fi
+    fi
   fi
   #
 }
 export -f database_status
 #
 
-echo "Preparing database"
+echo "Preparing database."
 su postgres -c "database_status"
-
+echo "Database prepared."
