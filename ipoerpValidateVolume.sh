@@ -23,29 +23,6 @@ function validate_parms()
   fi
 }
 #
-function process_vars()
-{
- source ${1}/UpStartVars.sh
- if [[ -z ${UPSTART_JOB} || -z ${SITE_NAME} || -z ${SITE_USER} || -z ${PSQL_USER} ]]
- then
-  echo "Missing one or both of :"
-  echo " - UPSTART_JOB : ${UPSTART_JOB}"
-  echo " - SITE_NAME : ${SITE_NAME}"
-  echo " - SITE_USER : ${SITE_USER}"
-  echo " - PSQL_USER : ${PSQL_USER}"
-  umount /tmp/odoo/ > /dev/null 2>&1 || :
-  exit
- else
-  echo "${SCREWY}"
-  echo "Getting environment variables from attached OpenERP device."
-  echo "-----------------------------------------------------------"
-  SITEBASE="/srv/${SITE_NAME}"
-  export OERPUSR_WORK="${SITEBASE}/${OPENERPUSR}"
-  export OERPUSR_HOME="${OERPUSR_WORK}/home"
-  export PSQLUSR_HOME="${SITEBASE}/${POSTGRESUSR}"
- fi
-}
-#
 function validate_attached_volume()
 {
   echo ""
@@ -71,7 +48,7 @@ function validate_attached_volume()
   return 1
 }
 #
-function validate_volume_content()
+function get_system_parameters_off_volume()
 {
   TEMP_DIR="/tmp/odoo"
   TEMP_DIR_ORIG=${TEMP_DIR}
@@ -81,10 +58,15 @@ function validate_volume_content()
   umount ${TEMP_DIR} > /dev/null 2>&1 || :
   mount ${HOMEDEVICE}${DEV_OPENERP} ${TEMP_DIR}
   echo ""
+  cp ${TEMP_DIR}/UpStartVars.sh /tmp 2> /dev/null
+}
+#
+function validate_volume_content()
+{
   echo "Checking for obligatory components"
   echo "=================================="
   #
-
+exit
   FILES_COUNT=$(ls -la ${TEMP_DIR} | wc -l)
   if [[ ( $? > 0) || ${FILES_COUNT} -lt 1 ]]
   then
@@ -98,43 +80,69 @@ function validate_volume_content()
     EMPTY_FILESYSTEM_ON_VOLUME="yes"
     return 0
   else
-    FILES_COUNT=$(tree -L 3 /srv/site_mtt/ | wc -l)
-    INSTALL_STATE=$(ls -l /etc/init/*.conf | grep -c site_mtt)
-#    echo "-- ${INSTALL_STATE}"
-
-#    if [[ "${INSTALL_STATE}" -gt "0" ]]
-#    if [[ -f "${TEMP_DIR}/UpStartVars.sh" ]]
-    if [[ -f "${SITE_ARCHIVE}" ]]
+    FILES_COUNT=$(tree -L 3 /srv/${SITENAME} | wc -l)
+    PRIOR_INSTALL=$(ls -l /etc/init/*.conf | grep -c ${SITENAME})
+    #
+    echo "-- ${FILES_COUNT}"
+    echo "-- ${PRIOR_INSTALL}"
+    if [[ ${PRIOR_INSTALL} -gt "0" ]]
     then
-      echo "Where do we go now?"
+      echo "Apparently a full prior installation for ${SITENAME} is already present and enabled. Quitting . . ."
       exit
-    elif [[ "${FILES_COUNT}" -lt "17"  ]]
-    then
-      echo "There is only a file skeleton; as if previous install was interrupted.  Continuing . . .  "
-      EMPTY_FILESYSTEM_ON_VOLUME="yes"
-      return 0
-    elif [[ "${FILES_COUNT}" -eq "19"  ]]
-    then
-      echo "There is a file skeleton; as if previous install was interrupted.  Continuing . . .  "
-      EMPTY_FILESYSTEM_ON_VOLUME="yes"
-      return 0
-    elif [[ "${FILES_COUNT}" -eq "40"  ]]
-    then
-      echo "There is an partially installed system. Continuing . . .  "
-      EMPTY_FILESYSTEM_ON_VOLUME="yes"
-      return 0
-    elif [[ "${FILES_COUNT}" -eq "42"  ]]
-    then
-      echo "There is an partially installed system. Continuing . . .  "
-      EMPTY_FILESYSTEM_ON_VOLUME="yes"
-      return 0
+    else
+      if [[ "${FILES_COUNT}" -gt "40" ]]
+      then
+        echo "Apparently a prior installation for ${SITENAME} is present but not yet enabled."
+        echo "Will complete the installation."
+        exit
+      elif [[ "${FILES_COUNT}" -lt "20" ]]
+      then
+        echo "Apparently a prior installation for ${SITENAME} is present but not yet enabled."
+        echo "Will complete the installation."
+        exit
+      else
+        echo "E"
+      fi
     fi
-    export SITEBASE="null"
-    export OERPUSR_HOME="null"
-    export PSQLUSR_HOME="null"
-
-    echo "What to do if ${FILES_COUNT} system files are found?????????????????????"
+    #
     exit
+    #
+    if [[ 1 == 0 ]]
+    then
+#      if [[ "${PRIOR_INSTALL}" -gt "0" ]]
+#      if [[ -f "${TEMP_DIR}/UpStartVars.sh" ]]
+      if [[ -f "${SITE_ARCHIVE}" ]]
+      then
+        echo "Where do we go now??"
+        exit
+      elif [[ "${FILES_COUNT}" -lt "17"  ]]
+      then
+        echo "There is only a file skeleton; as if previous install was interrupted.  Continuing . . .  "
+        EMPTY_FILESYSTEM_ON_VOLUME="yes"
+        return 0
+      elif [[ "${FILES_COUNT}" -eq "19"  ]]
+      then
+        echo "There is a file skeleton; as if previous install was interrupted.  Continuing . . .  "
+        EMPTY_FILESYSTEM_ON_VOLUME="yes"
+        return 0
+      elif [[ "${FILES_COUNT}" -eq "40"  ]]
+      then
+        echo "There is an partially installed system. Continuing . . .  "
+        EMPTY_FILESYSTEM_ON_VOLUME="yes"
+        return 0
+      elif [[ "${FILES_COUNT}" -eq "42"  ]]
+      then
+        echo "There is an partially installed system. Continuing . . .  "
+        EMPTY_FILESYSTEM_ON_VOLUME="yes"
+        return 0
+      fi
+      export SITEBASE="null"
+      export OERPUSR_HOME="null"
+      export PSQLUSR_HOME="null"
+#
+      echo "What to do if ${FILES_COUNT} system files are found?????????????????????"
+      exit
+    fi
   fi
   #
 }
@@ -152,66 +160,11 @@ then
   exit
 fi
 #
-echo "Found expected filesystem labels: \"${LBL_OPENERP}\" on \"${HOMEDEVICE}${DEV_OPENERP}\" \
-and \"${LBL_POSTGRES}\" on \"${HOMEDEVICE}${DEV_POSTGRES}\"."
+echo "Found expected filesystem labels: \"${LBL_OPENERP}\" on \"${HOMEDEVICE}${DEV_OPENERP}\""\
+      "and \"${LBL_POSTGRES}\" on \"${HOMEDEVICE}${DEV_POSTGRES}\"."
 echo ""
-validate_volume_content
+#
+get_system_parameters_off_volume
+# validate_volume_content
 echo "Leaving Validate Volume"
-
-
-
-
-
-echo "Commented out >>>>>>>>>>>>> Probably duplicate crap.  >>>>>>>>>>>>>>>>>>>"
-: <<'COMMENTEDBLOCK_1'
-
-
-  if [[ ! -f "${TEMP_DIR}/UpStartVars.sh" ]]
-  then
-    umount ${TEMP_DIR}/ > /dev/null 2>&1 || :
-    echo "No valid OpenERP configuration was detected.  Is there a known archive, \"${SITE_ARCHIVE}\"?"
-    #
-    if [[ ! -f "${SITE_ARCHIVE}" ]]
-    then
-      echo "${SITE_ARCHIVE} not found.  Don't understand this volume.  Quitting . . ."
-      exit
-    fi
-    #
-    if [[ -f "${TEMP_DIR}/site_tkd/openerp/UpStartVars.sh" && -f "${TEMP_DIR}/site_tkd/postgres/backups/site_tkd_db.gz"   ]]
-    then
-      echo "Seems we did that already"
-    else
-      echo ""
-      echo "Decompressing \"${SITE_ARCHIVE}\" to temporary location."
-      echo "========================================================"
-      exit
-      tar jxf ${SITE_ARCHIVE} --skip-old-files --directory=${TEMP_DIR}  > /dev/null
-    fi
-    pushd ${TEMP_DIR}/*/openerp
-    if [[ $? -ne 0 ]]
-    then
-      echo "${SITE_ARCHIVE} had no \"openerp\" directory.  Nothing more can be done.  Quitting . . ."
-      exit
-    fi
-    TEMP_DIR=$(pwd)
-    echo "Temp dir is now ${TEMP_DIR}"
-    #
-  fi
-  #
-
-  if [[ ! -f "${TEMP_DIR}/UpStartVars.sh" ]]
-  then
-     echo "Required file \"\" was not found. Don't understand this volume.  Quitting . . ."
-     exit
-  fi
-  echo "Found the variables file for the site.  Processing . . ."
-  echo "~~~ ${PSQLUSR_HOME}"
-  process_vars ${TEMP_DIR}
-  echo "~~~ ${PSQLUSR_HOME}"
-  #
-  [[ "${TEMP_DIR}" == "${TEMP_DIR_ORIG}" ]]  &&  umount ${TEMP_DIR}/ > /dev/null 2>&1 || :
-  return 0
-
-COMMENTEDBLOCK_1
-echo "End commented section. <<<"
 

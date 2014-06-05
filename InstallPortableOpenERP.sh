@@ -4,7 +4,6 @@ DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
 #
 # Load environment variables
 source $DEFDIR/MountParameters.sh
-source $DEFDIR/CreateParameters.sh  # depends on MountParameters.sh
 #
 ls -l ${HOMEDEVICE} 2> /dev/null
 if [[  $? -gt 0  ]]
@@ -36,14 +35,27 @@ echo "End commented section. <<<"
  echo "A) Fulfill all aptitude dependencis"
  source $DEFDIR/ipoerpAptDependencies.sh
  #
- echo "B) Set hostname"
- source $DEFDIR/iredmailSetHostName.sh
+# echo "B) Set hostname"
+# source $DEFDIR/iredmailSetHostName.sh
  #
- echo "C) Install all of iRedMail"
+ echo "B) Install all of iRedMail"
  source $DEFDIR/iredmailInstallAll.sh
  #
- echo "D) Install new volume"
+ echo "C) Install new or Mount existing volume."
  source $DEFDIR/ipoerpInstallVolume.sh
+ #
+ source /tmp/UpStatVars.sh 2> /dev/null
+ if [[ "$?" -gt "0" ]]
+ then
+   echo "We are not mounting a previous system. Get user supplied parameters"
+   source $DEFDIR/CreateParameters.sh
+ else
+   echo "We are mounting a previous system. Got parameters from UpStartVars.sh"
+ fi
+ echo ${SITE_NAME}
+ #
+ echo "D) Mount filesystem."
+ source $DEFDIR/ipoerpPermanentMount.sh
  #
  echo "E) Prepare users and directories"
  source $DEFDIR/ipoerpPrepareUsersAndDirectories.sh

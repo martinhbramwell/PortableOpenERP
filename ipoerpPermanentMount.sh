@@ -14,6 +14,14 @@ then
  echo " - HOMEDEVICE : ${HOMEDEVICE}"
  # echo " -  : ${}"
  exit
+else
+ echo " - SITENAME : ${SITENAME}"
+ echo " - POSTGRESUSR : ${POSTGRESUSR}"
+ echo " - OPENERPUSR : ${OPENERPUSR}"
+ echo " - FLAGTAG : ${FLAGTAG}"
+ echo " - DEVICELABEL : ${DEVICELABEL}"
+ echo " - HOMEDEVICE : ${HOMEDEVICE}"
+
 fi
 #
  #

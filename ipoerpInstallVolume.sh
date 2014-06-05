@@ -37,7 +37,7 @@ function validate_volume()
 if [[ -z ${HOMEDEVICE}  ]]
 then
   #
-  echo "No target volume specified so none will be created.  Installation will go to root '/' volume"
+  echo "No target volume specified so none will be created/mounted.  Installation will go to root '/' volume"
   #
 else
   #
@@ -67,20 +67,25 @@ else
      exit
   fi
   #
-  if [[ "${EMPTY_FILESYSTEM_ON_VOLUME}" == "yes"  ]]
+
+
+#  if [[ "${EMPTY_FILESYSTEM_ON_VOLUME}" == "yes"  ]]
+  if [[ 0 == 0  ]]
   then
-    permanent_mount
+#    permanent_mount
     echo "Mounted filesystem with /etc/fstab/."
   elif [[ -f ${OERPUSR_WORK}/UpStartVars.sh  ]]
   then
     echo "Where do we go now?"
-    exit
     mount_prepared_volume
     exit
   else
     echo "Assuming an install process was interrupted.  Continuing . . . "
+    exit
   fi
   echo $RSLT
   #
 fi
+
+
 

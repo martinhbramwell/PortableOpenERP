@@ -35,8 +35,7 @@ export -f drop_pg_tablespace
 function create_tablespace()
 {
   echo "Creating tablespace \"${PSQLUSRTBSP}\" in \"${DATA_DIRECTORY_PATH}\"..."
-  psql -c "CREATE TABLESPACE ${PSQLUSRTBSP} \
-           LOCATION '${DATA_DIRECTORY_PATH}';"
+  psql -c "CREATE TABLESPACE ${PSQLUSRTBSP} LOCATION '${DATA_DIRECTORY_PATH}';"
 }
 export -f create_tablespace
 #
@@ -223,11 +222,12 @@ export -f detect_pg_tablespace_location
 #
 function detect_pg_database()
 {
-  echo "Detecting PG database \"${PSQLUSRDB}\""
+  echo "Detecting PG database : \"${PSQLUSRDB}\""
   DBOID=$(psql -qtc \
     "SELECT oid FROM pg_database \
      WHERE datname = '${PSQLUSRDB}';" \
     | tr -d ' ')
+  echo " ?? ${DBOID} "
   [[ ! "XX" == "X${DBOID}X" ]]  &&  DATABASE_DETECTED="yes"
 }
 export -f detect_pg_database
@@ -243,8 +243,9 @@ function database_status()
   declare DATA_DIRECTORY_PATH="/srv/${SITENAME}/postgres/data"
   declare TABLESPACE_DIRECTORY="${DATA_DIRECTORY_PATH}/PG_*/"
   #
-  echo "Investigate tablespace and database."
+  echo "Investigate tablespace and database. ${SITENAME}"
   detect_pg_database
+  #
   if [[  ${DATABASE_DETECTED} == "yes"  ]]
   then
     echo "Postgres has database \"${PSQLUSRDB}\"?   YES.  Does postgres recognize tablespace \"${PSQLUSRTBSP}\"?"
@@ -321,14 +322,19 @@ function database_status()
     echo "Have database owner.  Restore from archive ${DATABASE_ARCHIVE}?"
     if [[ -f ${DATABASE_ARCHIVE} ]]
     then
+      echo "restoring."
       restore_archive
+    else
+      echo "no."
     fi
   fi
   #
 }
+pushd /tmp
 export -f database_status
 #
 
 echo "Preparing database."
 su postgres -c "database_status"
 echo "Database prepared."
+popd
