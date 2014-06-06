@@ -19,6 +19,7 @@ fi
 
 su postgres -c "pg_dump ${PSQLUSRDB} | gzip -c > ${DATABASE_ARCHIVE}"
 #
-tar jcvf ${SITE_ARCHIVE} /srv/${SITENAME}
+cp ${DATABASE_ARCHIVE} /srv/${SITENAME}/openerp/${PSQLUSRDB}.gz
+tar jcf ${SITE_ARCHIVE} /srv/${SITENAME}/openerp
 #
 

@@ -16,6 +16,8 @@ else
   mv fstab_new /etc/fstab
 fi
 #
+rm -fr /tmp/UpStart*
+rm -fr /tmp/odoo/*
 rm -fr /srv/site_mtt
 rm -fr /srv/postgres
 parted -s /dev/vdb mklabel gpt
