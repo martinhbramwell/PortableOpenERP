@@ -9,6 +9,19 @@ export NEWHOSTDOMAIN=""
 #
 # Define the identifiers OpenERP will use to connect to postgres
 export PSQLUSRPWD=""
+#
+if [[ -z ${SITEUSER} || -z ${SITENAME} || -z ${POSTGRESUSR} || -z ${OPENERPUSR} ]]
+then
+#
+echo "Usage :  ./ipoerpMakeUpStartScript.sh  "
+echo "With required variables :"
+echo " -     SITEUSER : ${SITEUSER}"
+echo " -     SITENAME : ${SITENAME}"
+echo " - POSTGRESUSR  : ${POSTGRESUSR}"
+echo " -  OPENERPUSR  : ${OPENERPUSR}"
+exit
+#
+fi
 export PSQLUSR="psql_${SITEUSER}"
 export PSQLUSR_HOME="/srv/${SITENAME}/${POSTGRESUSR}"
 #

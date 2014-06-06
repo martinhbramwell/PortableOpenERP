@@ -81,6 +81,10 @@ export OERPUSR="${OERPUSR}"
 export OERPUSR_WORK="${OERPUSR_WORK}"
 export OERPUSR_HOME="${OERPUSR_HOME}"
 #
+export TRANSPORTED_DB_ARCHIVE="${OERPUSR_WORK}/${PSQLUSRDB}.gz"
+export UPSTARTVARS_LOCATION="${OERPUSR_WORK}/UpStartVars.sh"
+export DATABASE_BACKUPS_DIR="${PSQLUSR_HOME}/backups"
+#
 declare -A GROUP_IDS=(
 [$(getent passwd ${POSTGRESUSR} | cut -f 4 -d:)]=${POSTGRESUSR}
 [$(getent passwd ${OPENERPUSR} | cut -f 4 -d:)]=${OPENERPUSR}

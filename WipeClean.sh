@@ -6,10 +6,10 @@ DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
 source $DEFDIR/MountParameters.sh
 # source $DEFDIR/CreateParameters.sh
 #
+stop odoo-${SITENAME}
+#
 umount /srv/${SITENAME}/openerp
 umount /srv/${SITENAME}/postgres
-#
-stop odoo-${SITENAME}
 #
 rm -f /etc/init/odoo-${SITENAME}.conf
 #

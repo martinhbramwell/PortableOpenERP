@@ -54,7 +54,7 @@ echo "End commented section. <<<"
    echo "We are mounting a previous system. Got parameters from UpStartVars.sh"
  elif [[ -f "${SITE_ARCHIVE}"  ]]
  then
-   echo "We have an archive from which to regenerate a system."
+   echo "We have an archive \"${SITE_ARCHIVE}\" from which to regenerate a system."
    echo "Decompressing archive . . ."
    tar jxf ${SITE_ARCHIVE} -C /
    mv ${SITE_ARCHIVE} ${SITE_ARCHIVE}.done
@@ -73,7 +73,6 @@ echo "End commented section. <<<"
    echo "We are restoring a previous system from an archive. Got parameters from its UpStartVars.sh"
  else
    echo "We are NOT mounting a previous system. Get user supplied parameters"
-   exit
    source $DEFDIR/CreateParameters.sh
  fi
  #
