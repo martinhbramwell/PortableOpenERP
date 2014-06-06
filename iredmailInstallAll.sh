@@ -157,10 +157,11 @@ DONE
   fi
 }
 #
-if [[  $(ps aux | grep -c vmail) -lt 1 ]]
+if [[  $(ps aux | grep -c "[d]ovecot") -lt 1 ]]
 then
     echo "Assuming iRedMail is not installed.  Installing . . . "
     #
+    source $DEFDIR/CreateParameters.sh
     validate_parameters
     set_host_name
     install_iredmail

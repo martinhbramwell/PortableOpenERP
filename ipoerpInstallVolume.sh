@@ -52,8 +52,8 @@ else
      echo "Device not as expected.  Quitting...."
      exit
   fi
-  #
-  export EMPTY_FILESYSTEM_ON_VOLUME="no"
+
+#  export EMPTY_FILESYSTEM_ON_VOLUME="no"
   if [[ ${NUMBER_OF_HOMEDEVICE_PARTITIONS} -eq 1   ]]
   then
      echo "Empty device enountered.  Will install on it."
@@ -62,18 +62,19 @@ else
   then
      echo "Prepared device found.  Investigating contents."
      validate_volume
+  #
   else
      echo "Device not as expected.  Quitting...."
      exit
   fi
   #
-
+  permanent_mount
 
 #  if [[ "${EMPTY_FILESYSTEM_ON_VOLUME}" == "yes"  ]]
   if [[ 0 == 0  ]]
   then
-#    permanent_mount
-    echo "Mounted filesystem with /etc/fstab/."
+    echo "skip doubtful section"
+#    echo "Mounted filesystem with /etc/fstab/."
   elif [[ -f ${OERPUSR_WORK}/UpStartVars.sh  ]]
   then
     echo "Where do we go now?"
@@ -85,6 +86,10 @@ else
   fi
   echo $RSLT
   #
+echo "Commented out >>>"
+: <<'COMMENTEDBLOCK_X'
+COMMENTEDBLOCK_X
+echo "End commented section. <<<"
 fi
 
 

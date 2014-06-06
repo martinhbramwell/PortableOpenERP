@@ -35,8 +35,8 @@ DEFDIR=\${0%/*}  #  Default directory of caller; maintains script portability.
 #
 source \${DEFDIR}/${SCRIPTFILEVARS}
 #
-echo "[\$(date --rfc-3339=seconds)] \$(whoami) starting \${ODOO_HOME}/\${ODOO_EXEC} -c \${ODOO_BASE}/\${ODOO_CONF}" >> /var/log/upstart/\${UPSTART_JOB}.log
-exec su \${SITE_USER} -s /bin/sh -c '\${ODOO_HOME}/\${ODOO_EXEC} -c \${ODOO_BASE}/\${ODOO_CONF}'
+echo "[\$(date --rfc-3339=seconds)] \$(whoami) -su->\${SITEUSER} starting \${ODOO_HOME}/\${ODOO_EXEC} -c \${ODOO_BASE}/\${ODOO_CONF}" >> /var/log/upstart/\${UPSTART_JOB}.log
+exec su \${SITEUSER} -s /bin/sh -c '\${ODOO_HOME}/\${ODOO_EXEC} -c \${ODOO_BASE}/\${ODOO_CONF}'
 #
 UPSTARTSCR
 # :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :
@@ -50,8 +50,13 @@ cat <<UPSTARTSCRVARS> ${OERPUSR_WORK}/${SCRIPTFILEVARS}
 #
 # Variables required by Upstart script and for remounting site in a new machine
 #
-export SITE_USER=${OERPUSR}
-export SITE_NAME=${SITENAME}
+export SITENAME=${SITENAME}
+export SITEUSER=${OERPUSR}
+#
+# Define the host name and domain to be used for this machine
+export NEWHOSTNAME=${NEWHOSTNAME}
+export NEWHOSTDOMAIN=${NEWHOSTDOMAIN}
+#
 export ODOO_BASE=${OERPUSR_WORK}
 export UPSTART_JOB=${SCRIPTNAME}
 #
@@ -72,6 +77,10 @@ export PSQLUSR_HOME="${PSQLUSR_HOME}"
 export PSQLUSRTBSP="${PSQLUSRTBSP}"
 export PSQLUSRDB="${PSQLUSRDB}"
 #
+export OERPUSR="${OERPUSR}"
+export OERPUSR_WORK="${OERPUSR_WORK}"
+export OERPUSR_HOME="${OERPUSR_HOME}"
+#
 declare -A GROUP_IDS=(
 [$(getent passwd ${POSTGRESUSR} | cut -f 4 -d:)]=${POSTGRESUSR}
 [$(getent passwd ${OPENERPUSR} | cut -f 4 -d:)]=${OPENERPUSR}
@@ -88,7 +97,9 @@ declare -A USERS_IDS=(
 #
 UPSTARTSCRVARS
 # :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :  :
-echo "Fixing permissions on ${OERPUSR_WORK}/${SCRIPTFILE} and ${OERPUSR_WORK}/${SCRIPTFILEVARS}"
+echo "Fixing ownership and permissions on ${OERPUSR_WORK}/${SCRIPTFILE} and ${OERPUSR_WORK}/${SCRIPTFILEVARS}"
+chown openerp:openerp ${OERPUSR_WORK}/${SCRIPTFILE}
+chown openerp:openerp ${OERPUSR_WORK}/${SCRIPTFILEVARS}
 chmod 755 ${OERPUSR_WORK}/${SCRIPTFILE}
 chmod 755 ${OERPUSR_WORK}/${SCRIPTFILEVARS}
 #

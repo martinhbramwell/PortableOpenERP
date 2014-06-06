@@ -4,6 +4,7 @@ DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
 #
 # Load environment variables
 source $DEFDIR/MountParameters.sh
+# source $DEFDIR/CreateParameters.sh
 #
 ls -l ${HOMEDEVICE} 2> /dev/null
 if [[  $? -gt 0  ]]
@@ -44,18 +45,19 @@ echo "End commented section. <<<"
  echo "C) Install new or Mount existing volume."
  source $DEFDIR/ipoerpInstallVolume.sh
  #
- source /tmp/UpStatVars.sh 2> /dev/null
+ echo "D) Get further working parameters, either user or from previous installation."
+ source /tmp/UpStartVars.sh 2> /dev/null
  if [[ "$?" -gt "0" ]]
  then
-   echo "We are not mounting a previous system. Get user supplied parameters"
+   echo "We are NOT mounting a previous system. Get user supplied parameters"
    source $DEFDIR/CreateParameters.sh
  else
    echo "We are mounting a previous system. Got parameters from UpStartVars.sh"
  fi
- echo ${SITE_NAME}
  #
- echo "D) Mount filesystem."
- source $DEFDIR/ipoerpPermanentMount.sh
+ # echo "D) Mount filesystem."
+ # source $DEFDIR/ipoerpPermanentMount.sh
+ # echo "! -- ${SITENAME}"
  #
  echo "E) Prepare users and directories"
  source $DEFDIR/ipoerpPrepareUsersAndDirectories.sh
@@ -66,11 +68,11 @@ echo "End commented section. <<<"
  echo "G) Create or restore database"
  source $DEFDIR/ipoerpPrepareDatabase.sh
  #
- #
 # echo "G) Prepare PostgreSQL User and Tablespace"
 # su postgres -c "source $DEFDIR/ipoerpPreparePgUserAndTablespace.sh"
 # #
  echo "H) Update OpenERP source code."
+  read -p "Press [Enter] to continue..."
  su openerp -c "source $DEFDIR/ipoerpUpdateOpenErpSourceCode.sh"
  #
  echo "I) Situate OpenERP source code."
@@ -91,12 +93,16 @@ echo "End commented section. <<<"
  echo "N) Patch IPTables and refresh firewall."
  source $DEFDIR/ipoerpPatchIPTables.sh
  #
+ echo "O) Make a transferable archive."
+ source $DEFDIR/ipoerpMakeArchive.sh
+ #
  echo "               -----------------------   "
  echo "Finished! A reboot is not required, but might be a good idea."
  echo "The first time a page is accessed, some files are not found.  A refresh is required, one time only, to get them."
  echo "Visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
  echo "Login  : admin:${PSQLUSRPWD}"
 #
+ #
 ###
 echo "Commented out >>>"
 : <<'COMMENTEDBLOCK_2'

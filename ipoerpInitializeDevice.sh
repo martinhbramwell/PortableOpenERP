@@ -66,6 +66,6 @@ else
  echo "====================="
  blkid ${HOMEDEVICE}*
  #
-
+fi
 ###########      Go on to ipoerpPermanentMount.sh
 

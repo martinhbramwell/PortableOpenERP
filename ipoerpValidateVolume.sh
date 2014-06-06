@@ -58,10 +58,12 @@ function get_system_parameters_off_volume()
   umount ${TEMP_DIR} > /dev/null 2>&1 || :
   mount ${HOMEDEVICE}${DEV_OPENERP} ${TEMP_DIR}
   echo ""
+  rm -f /tmp/UpStartVars.sh
   cp ${TEMP_DIR}/UpStartVars.sh /tmp 2> /dev/null
+  umount ${TEMP_DIR} > /dev/null 2>&1 || :
 }
 #
-function validate_volume_content()
+function XXXXXXvalidate_volume_content()
 {
   echo "Checking for obligatory components"
   echo "=================================="
@@ -166,5 +168,5 @@ echo ""
 #
 get_system_parameters_off_volume
 # validate_volume_content
-echo "Leaving Validate Volume"
+echo "Leaving Validate Volume.  Instances of \"/tmp/UpStartVars.sh\"?   $(ls -l /tmp/UpStartVars.sh 2> /dev/null | wc -l) "
 
