@@ -305,12 +305,12 @@ function database_status()
         create_tablespace
       fi
     else
-#      echo "Filesystem tablespace \"${PSQLUSRTBSP}\" exists as \"${TABLESPACE_DIRECTORY}\", but Postgres does not have it.  Deleting and recreating."
-#      drop_fs_tablespace
-#      echo "Tablespace dropped.  Creating new tablespace"
+      echo "Filesystem tablespace \"${PSQLUSRTBSP}\" exists as \"${TABLESPACE_DIRECTORY}\", but Postgres does not have it.  Deleting and recreating."
+      echo "  * * * THIS WAS COMMENTED OUT WHY? * * * "
+      drop_fs_tablespace
 
-       echo "Creating new tablespace"
-       create_tablespace
+      echo "Postgres has no such tablespace. Creating new tablespace ${PSQLUSRDB}."
+      create_tablespace
     fi
     #
     echo "Got a filesystem tablespace. Users exist?"
