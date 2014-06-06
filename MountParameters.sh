@@ -1,5 +1,9 @@
 #!/bin/bash
 #
+# Define the name of the OpenERP site
+export SITENAME=""
+export SITEUSER=""
+#
 # Choose to skip the normal command sequence
 export PARTIAL_BUILD=""  #  Non-blank means yes
 #
@@ -19,8 +23,10 @@ export POSTGRESUSR="postgres"
 export OPENERPUSR="openerp"
 #
 # Database backup archive
-export SITE_ARCHIVE=""  # eg, "/srv/site_tkd.tar.bz2"
-export DATABASE_ARCHIVE=""  # eg, "/srv/site_tkd/postgres/backups/site_tkd_db.gz"
+export SITE_ARCHIVE=""
+#               eg, "/srv/site_tkd.tar.bz2"
+export DATABASE_ARCHIVE=""
+#               eg,     "/srv/site_tkd/postgres/backups/site_tkd_db.gz"
 #
 # The hypervisor label used for this device, if such is required.
 export DEVICELABEL="" # eg, "Volume 4775"

@@ -2,7 +2,16 @@
 #
 DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
 #
-rm -f /etc/init/odoo-site_mtt.conf
+# Load environment variables
+source $DEFDIR/MountParameters.sh
+# source $DEFDIR/CreateParameters.sh
+#
+umount /srv/${SITENAME}/openerp
+umount /srv/${SITENAME}/postgres
+#
+stop odoo-${SITENAME}
+#
+rm -f /etc/init/odoo-${SITENAME}.conf
 #
 if [[ -z $(grep "THE-AREA-BELOW-IS-RESERVED-FOR-PATCHING" /etc/fstab)   ]]
 then
@@ -15,10 +24,22 @@ else
   awk -v VAR=${FLAGTAG} '{print} $0 ~ VAR {exit}' /etc/fstab > fstab_new
   mv fstab_new /etc/fstab
 fi
+pushd /tmp
+su postgres -c "psql -c 'DROP DATABASE ${SITENAME}_db;'"
+su postgres -c "psql -c 'DROP TABLESPACE ${SITENAME};'"
+popd
 #
 rm -fr /tmp/UpStart*
 rm -fr /tmp/odoo/*
-rm -fr /srv/site_mtt
+#
+rm -fr /srv/${SITENAME}/*
+rm -fr /srv/openerp
 rm -fr /srv/postgres
-parted -s /dev/vdb mklabel gpt
+parted -s ${HOMEDEVICE} mklabel gpt
+#
+if [[  -f ${SITE_ARCHIVE}.done  ]]
+then
+  mv ${SITE_ARCHIVE}.done ${SITE_ARCHIVE}
+fi
+
 

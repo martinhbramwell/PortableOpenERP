@@ -81,9 +81,10 @@ function restore_archive()
   DBOID=$(psql -qtc "SELECT oid FROM pg_database WHERE datname = '${PSQLUSRDB}';")
   if [[ "XX" == "X${DBOID}X" ]]
   then
-    echo "Creating DB \"${PSQLUSRDB}\" first."
-    psql -qtc "CREATE TABLESPACE ${PSQLUSRDB} \
-                  LOCATION '${DATA_DIRECTORY_PATH}';"
+    echo "Creating DB \"${PSQLUSRDB}\" in ${PSQLUSRTBSP} [$(whoami)]"
+    psql -qtc "CREATE DATABASE ${PSQLUSRDB} TABLESPACE ${PSQLUSRTBSP};"
+    echo "Passing \"${PSQLUSRDB}\" to user ${PSQLUSR}"
+    psql -qtc "ALTER DATABASE ${PSQLUSRDB} OWNER TO ${PSQLUSR};"
   fi
   #
   if [[ -f ${DATABASE_ARCHIVE} ]]
@@ -148,7 +149,7 @@ function user_exists()
      WHERE rolname = '${1}';")
   [[ $? -gt 0 ]]  &&   return ${UNEXPECTED_DATA}
   [[ ${USER_COUNT} -eq 1 ]]  &&  USER_EXISTS="yes"
-  echo "Database ${PSQLUSRDB} has USER ${1}? ${USER_EXISTS}"
+  echo "USER ${1} known? ${USER_EXISTS}"
 }
 export -f user_exists
 #

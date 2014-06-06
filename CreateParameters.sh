@@ -1,7 +1,6 @@
 #!/bin/bash
 #
-# Define the name of the OpenERP site
-export SITENAME=""
+# Define the name of the OpenERP site user
 export SITEUSER=""
 #
 # Define the host name and domain to be used for this machine
@@ -31,3 +30,4 @@ export INSTALLERS=~/installers
 # iRedmail version
 export IREDMAILPKG="iRedMail-0.8.7"
 #
+

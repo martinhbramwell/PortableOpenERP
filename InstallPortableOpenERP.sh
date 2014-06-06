@@ -24,6 +24,8 @@ Low memory : ${MEM}kB.    Quitting . . .
    exit 1
 fi
 #
+declare RESTORED_FROM_ARCHIVE="no"
+#
 export DATABASE_EXISTS="unknown"
 if [[  -z ${PARTIAL_BUILD}  ]]
 then
@@ -45,14 +47,34 @@ echo "End commented section. <<<"
  echo "C) Install new or Mount existing volume."
  source $DEFDIR/ipoerpInstallVolume.sh
  #
- echo "D) Get further working parameters, either user or from previous installation."
+ echo "D) Get further working parameters, either from user or from previous installation. (Archive : \"${SITE_ARCHIVE}\"?)"
  source /tmp/UpStartVars.sh 2> /dev/null
- if [[ "$?" -gt "0" ]]
+ if [[ "$?" -lt "1" ]]
  then
-   echo "We are NOT mounting a previous system. Get user supplied parameters"
-   source $DEFDIR/CreateParameters.sh
- else
    echo "We are mounting a previous system. Got parameters from UpStartVars.sh"
+ elif [[ -f "${SITE_ARCHIVE}"  ]]
+ then
+   echo "We have an archive from which to regenerate a system."
+   echo "Decompressing archive . . ."
+   tar jxf ${SITE_ARCHIVE} -C /
+   mv ${SITE_ARCHIVE} ${SITE_ARCHIVE}.done
+   echo "Moving /srv/${SITENAME}/openerp/${SITENAME}_db.gz ${DATABASE_ARCHIVE}"
+   ls -l /srv/${SITENAME}/openerp/${SITENAME}_db.gz
+   mkdir -p /srv/${SITENAME}/postgres/backups
+   mv /srv/${SITENAME}/openerp/${SITENAME}_db.gz ${DATABASE_ARCHIVE}
+   RESTORED_FROM_ARCHIVE="yes"
+   echo "Get further working parameters from previous installation."
+   USV=/srv/${SITENAME}/openerp/UpStartVars.sh
+   source ${USV} 2> /dev/null
+   if [[ "$?" -gt "0" ]]
+   then
+     echo "Unable to read ${USV}"
+   fi
+   echo "We are restoring a previous system from an archive. Got parameters from its UpStartVars.sh"
+ else
+   echo "We are NOT mounting a previous system. Get user supplied parameters"
+   exit
+   source $DEFDIR/CreateParameters.sh
  fi
  #
  # echo "D) Mount filesystem."
@@ -93,8 +115,11 @@ echo "End commented section. <<<"
  echo "N) Patch IPTables and refresh firewall."
  source $DEFDIR/ipoerpPatchIPTables.sh
  #
- echo "O) Make a transferable archive."
- source $DEFDIR/ipoerpMakeArchive.sh
+ if [[ ${RESTORED_FROM_ARCHIVE} == "no" ]]
+ then
+   echo "O) Make a transferable archive."
+   source $DEFDIR/ipoerpMakeArchive.sh
+ fi
  #
  echo "               -----------------------   "
  echo "Finished! A reboot is not required, but might be a good idea."
