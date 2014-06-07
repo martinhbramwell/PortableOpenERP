@@ -1,14 +1,14 @@
 #!/bin/bash
 #
 # Define the name of the OpenERP site user
-export SITEUSER=""
+export SITEUSER="user_mtt"
 #
 # Define the host name and domain to be used for this machine
-export NEWHOSTNAME=""
-export NEWHOSTDOMAIN=""
+export NEWHOSTNAME="mtt"
+export NEWHOSTDOMAIN="justtrade.net"
 #
 # Define the identifiers OpenERP will use to connect to postgres
-export PSQLUSRPWD=""
+export PSQLUSRPWD="okmmpl,,"
 #
 if [[ -z ${SITEUSER} || -z ${SITENAME} || -z ${POSTGRESUSR} || -z ${OPENERPUSR} ]]
 then
@@ -22,17 +22,9 @@ echo " -  OPENERPUSR  : ${OPENERPUSR}"
 exit
 #
 fi
-export PSQLUSR="psql_${SITEUSER}"
-export PSQLUSR_HOME="/srv/${SITENAME}/${POSTGRESUSR}"
-#
 # Define the initial database for OpenERP
 export PSQLUSRTBSP="${SITENAME}"
 export PSQLUSRDB="${SITENAME}_db"
-#
-# Define the identifiers OpenERP will use within the OS
-export OERPUSR="oerp_${SITEUSER}"
-export OERPUSR_WORK="/srv/${SITENAME}/${OPENERPUSR}"
-export OERPUSR_HOME="${OERPUSR_WORK}/home"
 #
 # Define Upstart Job Name
 export UPSTART_JOB="odoo_${SITENAME}"

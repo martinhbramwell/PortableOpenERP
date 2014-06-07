@@ -55,21 +55,7 @@ echo "End commented section. <<<"
  elif [[ -f "${SITE_ARCHIVE}"  ]]
  then
    echo "We have an archive \"${SITE_ARCHIVE}\" from which to regenerate a system."
-   echo "Decompressing archive . . ."
-   tar jxf ${SITE_ARCHIVE} -C /
-   mv ${SITE_ARCHIVE} ${SITE_ARCHIVE}.done
-   echo "Moving /srv/${SITENAME}/openerp/${SITENAME}_db.gz ${DATABASE_ARCHIVE}"
-   ls -l /srv/${SITENAME}/openerp/${SITENAME}_db.gz
-   mkdir -p /srv/${SITENAME}/postgres/backups
-   mv /srv/${SITENAME}/openerp/${SITENAME}_db.gz ${DATABASE_ARCHIVE}
-   RESTORED_FROM_ARCHIVE="yes"
-   echo "Get further working parameters from previous installation."
-   USV=/srv/${SITENAME}/openerp/UpStartVars.sh
-   source ${USV} 2> /dev/null
-   if [[ "$?" -gt "0" ]]
-   then
-     echo "Unable to read ${USV}"
-   fi
+   source $DEFDIR/ipoerpUnpackArchive.sh
    echo "We are restoring a previous system from an archive. Got parameters from its UpStartVars.sh"
  else
    echo "We are NOT mounting a previous system. Get user supplied parameters"

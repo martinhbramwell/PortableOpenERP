@@ -19,7 +19,9 @@ fi
 function drop_fs_tablespace()
 {
   echo "Dropping tablespace \"${PSQLUSRTBSP}\" from device filesystem path \"${TABLESPACE_DIRECTORY}\"."
+  mkdir -p ${DATA_DIRECTORY_PATH}
   rm -fr ${TABLESPACE_DIRECTORY}
+  return $?
 }
 export -f drop_fs_tablespace
 #
@@ -308,7 +310,6 @@ function database_status()
       echo "Filesystem tablespace \"${PSQLUSRTBSP}\" exists as \"${TABLESPACE_DIRECTORY}\", but Postgres does not have it.  Deleting and recreating."
       echo "  * * * THIS WAS COMMENTED OUT WHY? * * * "
       drop_fs_tablespace
-
       echo "Postgres has no such tablespace. Creating new tablespace ${PSQLUSRDB}."
       create_tablespace
     fi

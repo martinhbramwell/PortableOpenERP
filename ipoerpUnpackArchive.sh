@@ -10,12 +10,6 @@ then
   exit
 fi
 #
-echo "Fix Me  see ipoerpMakeUpStartScript.sh"
-exit
-export TRANSPORTED_DB_ARCHIVE=/srv/${SITENAME}/openerp/${SITENAME}_db.gz
-export DATABASE_BACKUPS_DIR=/srv/${SITENAME}/postgres/backups
-export UPSTARTVARS_LOCATION=/srv/${SITENAME}/openerp/UpStartVars.sh
-#
 echo "Decompressing archive . . ."
 tar jxf ${SITE_ARCHIVE} -C /
 mv ${SITE_ARCHIVE} ${SITE_ARCHIVE}.done
