@@ -31,6 +31,7 @@ function install_iredmail()
     export IREDMAIL="https://bitbucket.org/zhb/iredmail/downloads"
     export IREDMAILTAR="${IREDMAILPKG}.tar.bz2"
     #
+    mkdir -p ${INSTALLERS}
     echo "Entering ${INSTALLERS}"
     pushd ${INSTALLERS}
     if [[ ! -d ${IREDMAILPKG} ]]; then

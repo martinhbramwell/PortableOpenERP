@@ -35,7 +35,7 @@ DEFDIR=\${0%/*}  #  Default directory of caller; maintains script portability.
 #
 source \${DEFDIR}/${SCRIPTFILEVARS}
 #
-echo "[\$(date --rfc-3339=seconds)] \$(whoami) -su->\${SITEUSER} starting \${ODOO_HOME}/\${ODOO_EXEC} -c \${ODOO_BASE}/\${ODOO_CONF}" >> /var/log/upstart/\${UPSTART_JOB}.log
+echo "[\$(date --rfc-3339=seconds)] \$(whoami)-su->\${SITEUSER} starting \${ODOO_HOME}/\${ODOO_EXEC} -c \${ODOO_BASE}/\${ODOO_CONF}" >> /var/log/upstart/\${UPSTART_JOB}.log
 exec su \${SITEUSER} -s /bin/sh -c '\${ODOO_HOME}/\${ODOO_EXEC} -c \${ODOO_BASE}/\${ODOO_CONF}'
 #
 UPSTARTSCR
@@ -85,6 +85,7 @@ export TRANSPORTED_DB_ARCHIVE="${OERPUSR_WORK}/${PSQLUSRDB}.gz"
 export UPSTARTVARS_LOCATION="${OERPUSR_WORK}/UpStartVars.sh"
 export DATABASE_BACKUPS_DIR="${PSQLUSR_HOME}/backups"
 #
+
 declare -A GROUP_IDS=(
 [$(getent passwd ${POSTGRESUSR} | cut -f 4 -d:)]=${POSTGRESUSR}
 [$(getent passwd ${OPENERPUSR} | cut -f 4 -d:)]=${OPENERPUSR}

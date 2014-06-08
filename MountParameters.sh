@@ -32,9 +32,9 @@ export LBL_POSTGRES="PostgreSQL"
 export FLAGTAG="THE-AREA-BELOW-IS-RESERVED-FOR-PATCHING"
 #
 # Database backup archive
-export SITE_ARCHIVE="/srv/site_mtt.tar.bz2"
+export SITE_ARCHIVE="/srv/${SITENAME}.tar.bz2"
 #               eg, "/srv/site_tkd.tar.bz2"
-export DATABASE_ARCHIVE="/srv/site_mtt/postgres/backups/site_mtt_db.gz"
+export DATABASE_ARCHIVE="/srv/${SITENAME}/postgres/backups/${SITENAME}_db.gz"
 #               eg,     "/srv/site_tkd/postgres/backups/site_tkd_db.gz"
 #
 export TRANSPORTED_DB_ARCHIVE="${OERPUSR_WORK}/${PSQLUSRDB}.gz"
