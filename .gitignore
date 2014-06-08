@@ -1,5 +1,7 @@
 *.mine
 *.shbk
 *~
+CreateParameters.sh
+MountParameters.sh
 
 

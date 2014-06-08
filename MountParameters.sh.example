@@ -1,14 +1,14 @@
 #!/bin/bash
 #
 # Define the name of the OpenERP site
-export SITENAME="site_mtt"
-export SITEUSER="user_mtt"
-#
-# Choose to skip the normal command sequence
-export PARTIAL_BUILD=""  #  Non-blank means yes
+export SITENAME=""
+export SITEUSER=""
 #
 # System device on which to install site  ** NOTHING WILL REMAIN OF ANY PRIOR CONTENT **
-export HOMEDEVICE="/dev/vdb" # eg, "/dev/sdb"
+export HOMEDEVICE="" # eg, "/dev/sdb"
+#
+# The hypervisor label used for this device, if such is required.
+export DEVICELABEL="" # eg, "Volume 4775"
 #
 # Specify OpenERP XMLRPC port #
 export ACCESS_PORT=8029
@@ -40,8 +40,4 @@ export DATABASE_ARCHIVE="/srv/${SITENAME}/postgres/backups/${SITENAME}_db.gz"
 export TRANSPORTED_DB_ARCHIVE="${OERPUSR_WORK}/${PSQLUSRDB}.gz"
 export UPSTARTVARS_LOCATION="${OERPUSR_WORK}/UpStartVars.sh"
 export DATABASE_BACKUPS_DIR="${PSQLUSR_HOME}/backups"
-#
-# The hypervisor label used for this device, if such is required.
-export DEVICELABEL="NewStartTgtDrv" # eg, "Volume 4775"
-#
 

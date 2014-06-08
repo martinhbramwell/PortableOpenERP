@@ -1,14 +1,11 @@
 #!/bin/bash
 #
-# Define the name of the OpenERP site user
-export SITEUSER="user_mtt"
-#
 # Define the host name and domain to be used for this machine
-export NEWHOSTNAME="mtt"
-export NEWHOSTDOMAIN="justtrade.net"
+export NEWHOSTNAME=""
+export NEWHOSTDOMAIN=""
 #
 # Define the identifiers OpenERP will use to connect to postgres
-export PSQLUSRPWD="okmmpl,,"
+export PSQLUSRPWD=""
 #
 if [[ -z ${SITEUSER} || -z ${SITENAME} || -z ${POSTGRESUSR} || -z ${OPENERPUSR} ]]
 then
