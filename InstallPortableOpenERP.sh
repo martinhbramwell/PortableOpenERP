@@ -27,6 +27,7 @@ Low memory : ${MEM}kB.    Quitting . . .
 fi
 #
 declare RESTORED_FROM_ARCHIVE="no"
+declare STEP_THROUGH="no"
 #
 #
 ##
@@ -40,12 +41,15 @@ echo "<<< 1"
 #
 echo "A) Fulfill all aptitude dependencis"
 source $DEFDIR/ipoerpAptDependencies.sh
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "B) Install all of iRedMail"
 source $DEFDIR/iredmailInstallAll.sh
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "C) Install new or Mount existing volume."
 source $DEFDIR/ipoerpInstallVolume.sh
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "D) Get further working parameters, either from user or from previous installation. (Archive : \"${SITE_ARCHIVE}\"?)"
 source /tmp/UpStartVars.sh 2> /dev/null
@@ -61,37 +65,47 @@ else
   echo "We are NOT mounting a previous system. Get user supplied parameters"
   source $DEFDIR/CreateParameters.sh
 fi
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "E) Prepare users and directories"
 source $DEFDIR/ipoerpPrepareUsersAndDirectories.sh
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "F) Generate OpenERP server configuration file"
 source $DEFDIR/ipoerpMakeOerpServerConfigFile.sh
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "G) Create or restore database"
 source $DEFDIR/ipoerpPrepareDatabase.sh
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "H) Update OpenERP source code."
 su openerp -c "source $DEFDIR/ipoerpUpdateOpenErpSourceCode.sh"
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "I) Situate OpenERP source code."
 source $DEFDIR/ipoerpSituateOpenErpSourceCode.sh
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "J) Pip install to virtual environment"
 su ${OERPUSR} -c "source $DEFDIR/ipoerpPipInstallToVEnv.sh"
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "K) Patch OpenERP Launcher"
 su ${OERPUSR} -c "source $DEFDIR/ipoerpPatchOpenErpLauncher.sh"
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "L) Make the UpStart script"
 source $DEFDIR/ipoerpMakeUpStartScript.sh
-read -p "Press [Enter] to continue..."
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "M) Make the UpStart \"conf\" file."
 source $DEFDIR/ipoerpMakeUpstartConf.sh
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 echo "N) Patch IPTables and refresh firewall."
 source $DEFDIR/ipoerpPatchIPTables.sh
+[[ ${STEP_THROUGH} == "yes" ]] && read -p "Press [Enter] to continue..."
 #
 if [[ ${RESTORED_FROM_ARCHIVE} == "no" ]]
 then
@@ -101,7 +115,7 @@ fi
 #
 echo "               -----------------------   "
 echo "Finished! A reboot is not required, but might be a good idea."
-echo "Sometimes, when Odoo is accessed for the very first time, some files are not found.  If so, a deep page refresh <ctrl-r>, one time only, may be enough to get them."
+echo "Occasionally, when Odoo is accessed for the very first time, some files are not found.  If so, a deep page refresh <ctrl-r>, one time only, may be enough to get them."
 echo "Visit http://${NEWHOSTNAME}.${NEWHOSTDOMAIN}:${ACCESS_PORT}/"
 echo "Parameters you specified : "
 echo "   Password for Database Management : ${PSQLUSRPWD}"
@@ -110,7 +124,7 @@ echo "              Name of main database : ${PSQLUSRDB}
 echo "Useful commands if things go wrong :"
 echo "   cat /etc/init/${SCRIPTNAME}.conf"
 echo "   cat ${OERPUSR_WORK}/${SCRIPTFILE}"
-echo "   tail -fn 100 /var/log/upstart/\${UPSTART_JOB}.log"
+echo "   tail -fn 100 /var/log/upstart/${UPSTART_JOB}.log"
 echo ""
 
 #

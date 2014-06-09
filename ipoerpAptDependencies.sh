@@ -4,7 +4,7 @@ aptProcess() {
     echo "Performing dependency collection"
     #
     #
-    apt-get install aptitude
+    apt-get -y install aptitude
     #
     add-apt-repository -y ppa:ubuntu-clamav/ppa
     #
