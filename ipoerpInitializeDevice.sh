@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# if [[ -z ${KKK}  ||  -z ${SITENAME}}  ||  -z ${POSTGRESUSR}  ||  -z ${OPENERPUSR} ]]
-if [[                  -z ${SITENAME}}  ||  -z ${POSTGRESUSR}  ||  -z ${OPENERPUSR} ]]
+# if [[ -z ${KKK}  ||  -z ${SITENAME}}  ||  -z ${POSTGRESUSR}  ||  -z ${OPENERPUSR} ||  -z ${ODOO_PERCENTAGE} ]]
+if [[                  -z ${SITENAME}}  ||  -z ${POSTGRESUSR}  ||  -z ${OPENERPUSR} ||  -z ${ODOO_PERCENTAGE} ]]
 then
  #
  echo "Usage :  ./ipoerpInstallNewVolume.sh  "
@@ -9,6 +9,7 @@ then
  echo " - SITENAME : ${SITENAME}"
  echo " - POSTGRESUSR : ${POSTGRESUSR}"
  echo " - OPENERPUSR : ${OPENERPUSR}"
+ echo " - ODOO_PERCENTAGE : ${ODOO_PERCENTAGE}"
  # echo " -  : ${}"
  exit
 fi
@@ -29,9 +30,9 @@ else
  echo "================="
  parted -s ${HOMEDEVICE} mklabel gpt
  #
- echo "Create first partition"
+ echo "Create first partition on ${ODOO_PERCENTAGE}% of device"
  echo "======================"
- parted -s -a optimal ${HOMEDEVICE} mkpart primary ext4 0% 25%
+ parted -s -a optimal ${HOMEDEVICE} mkpart primary ext4 0% ${ODOO_PERCENTAGE}%
  #
  echo "Show freespace"
  echo "=============="

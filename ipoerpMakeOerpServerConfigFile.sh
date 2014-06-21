@@ -35,7 +35,8 @@ db_user = ${PSQLUSR}
 db_password = ${PSQLUSRPWD}
 
 ; where modules can be found
-addons_path = ${OERPUSR_WORK}/server/openerp/addons,${OERPUSR_WORK}/server/openerp/addons/web
+; addons_path = ${OERPUSR_WORK}/server/openerp/addons,${OERPUSR_WORK}/server/openerp/addons/web
+addons_path = ${OERPUSR_WORK}/server/addons
 
 ; log settings
 logfile = ${OERPUSR_HOME}/log/site_openerp.log

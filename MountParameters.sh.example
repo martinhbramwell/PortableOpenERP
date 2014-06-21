@@ -10,6 +10,9 @@ export HOMEDEVICE="" # eg, "/dev/sdb"
 # The hypervisor label used for this device, if such is required.
 export DEVICELABEL="" # eg, "Volume 4775"
 #
+# Specify disk proportions
+export ODOO_PERCENTAGE="40"
+#
 # Specify OpenERP XMLRPC port #
 export ACCESS_PORT=8029
 #
