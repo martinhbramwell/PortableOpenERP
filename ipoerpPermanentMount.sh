@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# if [[ -z ${KKK}  ||  -z ${SITENAME}}  ||  -z ${POSTGRESUSR}  ||  -z ${OPENERPUSR}  ||  -z ${FLAGTAG}  ||  -z ${DEVICELABEL}  ||  -z ${HOMEDEVICE} ]]
-if [[                  -z ${SITENAME}}  ||  -z ${POSTGRESUSR}  ||  -z ${OPENERPUSR}  ||  -z ${FLAGTAG}  ||  -z ${DEVICELABEL}  ||  -z ${HOMEDEVICE} ]]
+# if [[ -z ${KKK}  ||  -z ${SITENAME}}  ||  -z ${POSTGRESUSR}  ||  -z ${OPENERPUSR}  ||  -z ${FLAGTAG}  ||  -z ${DEVICENAME}  ||  -z ${HOMEDEVICE} ]]
+if [[                  -z ${SITENAME}}  ||  -z ${POSTGRESUSR}  ||  -z ${OPENERPUSR}  ||  -z ${FLAGTAG}  ||  -z ${DEVICENAME}  ||  -z ${HOMEDEVICE} ]]
 then
  #
  echo "Usage :  ./ipoerpInstallNewVolume.sh  "
@@ -10,7 +10,7 @@ then
  echo " - POSTGRESUSR : ${POSTGRESUSR}"
  echo " - OPENERPUSR : ${OPENERPUSR}"
  echo " - FLAGTAG : ${FLAGTAG}"
- echo " - DEVICELABEL : ${DEVICELABEL}"
+ echo " - DEVICENAME : ${DEVICENAME}"
  echo " - HOMEDEVICE : ${HOMEDEVICE}"
  # echo " -  : ${}"
  exit
@@ -42,7 +42,7 @@ fi
  echo "============================================"
 cat <<EOFSTAB>> /etc/fstab
 #
-# Server Site :: ${SITENAME}  -- Hypervisor Volume Name <[ ${DEVICELABEL} ]>
+# Server Site :: ${SITENAME}  -- Hypervisor Volume Name <[ ${DEVICENAME} ]>
 # - Filesystem for OpenERP : ${SITENAME}
 UUID=$(blkid -s UUID -o value ${HOMEDEVICE}1) /srv/${SITENAME}/${OPENERPUSR}  ext4 defaults 0 2
 # - Filesystem for PostgreSQL : ${SITENAME}

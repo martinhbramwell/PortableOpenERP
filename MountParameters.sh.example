@@ -7,8 +7,14 @@ export SITEUSER=""
 # System device on which to install site  ** NOTHING WILL REMAIN OF ANY PRIOR CONTENT **
 export HOMEDEVICE="" # eg, "/dev/sdb"
 #
+# The label used differentiate device labels.
+# port DEVICELABEL="12345678901234" #  maximum characters : 14
+export DEVICELABEL="TheMaximumSize" # eg, "DemoHost" will result in device
+#                             # labels "OdooDemoHost" and "PgDemoHost"
+#                             #
+#
 # The hypervisor label used for this device, if such is required.
-export DEVICELABEL="" # eg, "Volume 4775"
+export DEVICENAME="" # eg, "Volume 4775"
 #
 # Specify disk proportions
 export ODOO_PERCENTAGE="40"
@@ -30,8 +36,8 @@ export OERPUSR_WORK="/srv/${SITENAME}/${OPENERPUSR}"
 export OERPUSR_HOME="${OERPUSR_WORK}/home"
 #
 #  System introspection flags. Written by volume creation process and exacted by mounting process.
-export LBL_OPENERP="OpenERP"
-export LBL_POSTGRES="PostgreSQL"
+export LBL_OPENERP="Odoo${DEVICELABEL}"
+export LBL_POSTGRES="Pg${DEVICELABEL}"
 export FLAGTAG="THE-AREA-BELOW-IS-RESERVED-FOR-PATCHING"
 #
 # Database backup archive

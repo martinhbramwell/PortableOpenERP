@@ -16,9 +16,9 @@ function validate_parms_msv()
     exit
   fi
   #
-  if [[ -z ${BB}  ||  -z ${OERPUSR_WORK}  || -z ${PSQLUSR_HOME}  || -z ${FLAGTAG}  || -z ${DEVICELABEL}
+  if [[ -z ${BB}  ||  -z ${OERPUSR_WORK}  || -z ${PSQLUSR_HOME}  || -z ${FLAGTAG}  || -z ${DEVICENAME}
      || -z ${PSQLUSR} || -z ${OPENERPUSR} || -z ${POSTGRESUSR} || -z ${SITEUSER} || -z ${OERPUSR_HOME}  ]]
-#  if [[                 -z ${OERPUSR_WORK}  || -z ${PSQLUSR_HOME}  || -z ${FLAGTAG}  || -z ${DEVICELABEL}
+#  if [[                 -z ${OERPUSR_WORK}  || -z ${PSQLUSR_HOME}  || -z ${FLAGTAG}  || -z ${DEVICENAME}
 #     || -z ${PSQLUSR} || -z ${OPENERPUSR} || -z ${POSTGRESUSR} || -z ${SITEUSER} || -z ${OERPUSR_HOME}  ]]
   then
     #
@@ -29,7 +29,7 @@ function validate_parms_msv()
     echo " - PSQLUSR : ${PSQLUSR}"
     echo " - OPENERPUSR : ${OPENERPUSR}"
     echo " - POSTGRESUSR : ${POSTGRESUSR}"
-    echo " - DEVICELABEL : ${DEVICELABEL}"
+    echo " - DEVICENAME : ${DEVICENAME}"
     echo " - OERPUSR_WORK : ${OERPUSR_WORK}"
     echo " - PSQLUSR_HOME : ${PSQLUSR_HOME}"
     echo " - OERPUSR_HOME : ${OERPUSR_HOME}"
@@ -228,7 +228,7 @@ function patch_fstab()
       #
       cat <<EOFSTAB>> /etc/fstab
 #
-# Server Site :: ${SITE_NAME}  -- Hypervisor Volume Name <[ ${DEVICELABEL} ]>
+# Server Site :: ${SITE_NAME}  -- Hypervisor Volume Name <[ ${DEVICENAME} ]>
 # - Filesystem for OpenERP : ${SITE_NAME}
 UUID=$(blkid -s UUID -o value ${HOMEDEVICE}${DEV_OPENERP}) ${OERPUSR_WORK}  ext4 defaults 0 2
 # - Filesystem for PostgreSQL : ${SITE_NAME}
@@ -238,14 +238,14 @@ EOFSTAB
       #
       #
   else
-      if [[  $(cat /etc/fstab | grep ${SITE_NAME} | grep -c ${DEVICELABEL}) -lt "1" ]]
+      if [[  $(cat /etc/fstab | grep ${SITE_NAME} | grep -c ${DEVICENAME}) -lt "1" ]]
       then
           echo "Detected previous patching of \"/etc/fstab\". "
           echo " * * DEVICE MOUNTING CANNOT PROCEED * * "
           echo "    Delete the line:  ##### ${FLAGTAG} ##### , from \"/etc/fstab\"and try again."
           exit 1
       else
-          echo "\"/etc/fstab\" was patched previously with \"# Server Site :: ${SITE_NAME}  -- Hypervisor Volume Name <[ ${DEVICELABEL} ]>\". "
+          echo "\"/etc/fstab\" was patched previously with \"# Server Site :: ${SITE_NAME}  -- Hypervisor Volume Name <[ ${DEVICENAME} ]>\". "
           echo " * * Assuming it's correct.  Continuing . . . * * "
       fi
   fi

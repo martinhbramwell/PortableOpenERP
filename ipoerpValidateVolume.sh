@@ -9,7 +9,7 @@ function validate_parms()
     exit
   fi
   #
-  if [[ -z ${LBL_OPENERP}  || -z ${LBL_POSTGRES}  || -z ${DEVICELABEL} ]]
+  if [[ -z ${LBL_OPENERP}  || -z ${LBL_POSTGRES} ]]
   then
     #
     echo "Usage :  ./ipoerpInstallNewVolume.sh  "
@@ -17,7 +17,6 @@ function validate_parms()
     echo " - LBL_OPENERP : ${LBL_OPENERP}"
     echo " - LBL_POSTGRES : ${LBL_POSTGRES}"
     echo " - FLAGTAG : ${FLAGTAG}"
-    echo " - DEVICELABEL : ${DEVICELABEL}"
     # echo " -  : ${}"
     exit
   fi
