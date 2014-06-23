@@ -26,8 +26,10 @@ else
 fi
 echo "Drop database and tablespace."
 pushd /tmp  > /dev/null
+su postgres -c "psql -c 'DROP DATABASE ${PSQLUSR};'"  2> /dev/null
 su postgres -c "psql -c 'DROP DATABASE ${SITENAME}_db;'"  2> /dev/null
 su postgres -c "psql -c 'DROP TABLESPACE ${SITENAME};'" 2> /dev/null
+su postgres -c "psql -c 'DROP USER ${PSQLUSR};'"  2> /dev/null
 popd  > /dev/null
 #
 #

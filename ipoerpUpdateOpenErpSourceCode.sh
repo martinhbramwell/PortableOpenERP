@@ -52,7 +52,12 @@ then
 	  git pull
 	  popd > /dev/null
 	else 
-    git clone git@github.com:odoo/odoo.git
+	  if [[ 1 == 0 ]]
+	  then
+      git clone git@github.com:odoo/odoo.git
+    else
+      cp -r /srv/odoo .
+    fi
   fi
 
 	if [ -d openobject-server ]
