@@ -43,6 +43,10 @@ else
  echo "User ${OERPUSR} already exists"
 fi
 #
+#
+mkdir -p                       /usr/local/share/Odoo
+chown       openerp:${OERPUSR} /usr/local/share/Odoo
+#
 mkdir -p                       ${OERPUSR_WORK}/source/
 chown       openerp:openerp    ${OERPUSR_WORK}
 #

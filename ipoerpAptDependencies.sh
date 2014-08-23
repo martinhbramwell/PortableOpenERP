@@ -16,7 +16,7 @@ aptProcess() {
     #
     aptitude -y install postgresql-client python-dateutil bzr gcc make mc python-dev wget \
         python-imaging python-pychart python-libxslt1 python-matplotlib xfsprogs \
-        antiword python-reportlab-accel python-zsi zlib1g-dev zip libffi-dev
+        antiword python-reportlab-accel python-zsi python-decorator zlib1g-dev zip libffi-dev
     #
     mkdir -p ~/tmpxxxxxtmp
     pushd ~/tmpxxxxxtmp

@@ -39,7 +39,7 @@ db_password = ${PSQLUSRPWD}
 addons_path = ${OERPUSR_WORK}/server/addons
 
 ; log settings
-logfile = ${OERPUSR_HOME}/log/site_openerp.log
+logfile = ${OERPUSR_WORK}/log/site_openerp.log
 log_level = error
 
 ; special handling required for running behind a front-end server

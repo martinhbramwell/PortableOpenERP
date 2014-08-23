@@ -54,51 +54,16 @@ then
 	else 
 	  if [[ 1 == 0 ]]
 	  then
+      echo "Cloning from GitHub into $(pwd)."
       git clone git@github.com:odoo/odoo.git
     else
-      cp -r /srv/odoo .
+      echo "Faking cloning from local copy."
+      cp -r /srv/odoo_source_backup ./odoo
     fi
   fi
-
-	if [ -d openobject-server ]
-	then
-                echo "Stepping into ${OERPUSR_WORK}/source/openobject-server"
-		pushd openobject-server
-		bzr update
-		echo "Done server."
-		popd
-		echo "Stepped out to $(pwd)"
-	else
-		echo "Checking out lp:openobject-server"
-		# bzr checkout --lightweight lp:openobject-server
-	fi
-	#
-	if [ -d openobject-addons ]
-	then
-		pushd openobject-addons
-		bzr update
-		echo "Done addons."
-		popd
-		echo "Stepped out to $(pwd)"
-		#
-	else
-		echo "Checking out lp:openobject-addons"
-		# bzr checkout --lightweight lp:openobject-addons
-	fi
-	#
-	if [ -d openerp-web ]
-	then
-		pushd openerp-web
-		bzr update
-		echo "Done web."
-		popd
-		echo "Stepped out to $(pwd)"
-	else
-		echo "Checking out lp:openerp-web"
-		# bzr checkout --lightweight lp:openerp-web
-	fi
 	#
 	popd > /dev/null
 	# echo "Stepped out to $(pwd)"
 fi
 #
+

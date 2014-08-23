@@ -10,7 +10,7 @@ export PSQLUSRPWD=""
 if [[ -z ${SITEUSER} || -z ${SITENAME} || -z ${POSTGRESUSR} || -z ${OPENERPUSR} ]]
 then
 #
-echo "Usage :  ./ipoerpMakeUpStartScript.sh  "
+echo "Usage :  ./CreateParameters.sh  "
 echo "With required variables :"
 echo " -     SITEUSER : ${SITEUSER}"
 echo " -     SITENAME : ${SITENAME}"

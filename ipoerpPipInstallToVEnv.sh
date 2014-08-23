@@ -61,6 +61,7 @@ then
  pip install python-openid
  pip install python-webdav
  pip install pytz
+ pip install pyPdF
  pip install pyyaml
  pip install reportlab
  pip install setuptools

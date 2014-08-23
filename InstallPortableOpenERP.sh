@@ -1,6 +1,18 @@
 #!/bin/bash
 #
 DEFDIR=${0%/*}  #  Default directory of caller; maintains script portability.
+
+if [[ $(whoami) != "root" ]]
+then
+  echo "You should execute as root from root's home directory";
+  exit;
+elif [[ $(pwd) != "/root" ]]
+then
+  echo "You should execute from root's home directory";
+  exit;
+fi
+
+
 #
 # Load environment variables
 source $DEFDIR/MountParameters.sh

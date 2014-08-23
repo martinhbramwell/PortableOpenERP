@@ -2,7 +2,7 @@
 #
 # Define the name of the OpenERP site
 export SITENAME=""
-export SITEUSER=""
+export SITEUSER=""  #  * * *    Must be lower case  * * *  !!!  (imposed by Postgres)
 #
 # System device on which to install site  ** NOTHING WILL REMAIN OF ANY PRIOR CONTENT **
 export HOMEDEVICE="" # eg, "/dev/sdb"
